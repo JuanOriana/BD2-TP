@@ -78,11 +78,13 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user_dict = fake_users_db.get(form_data.username)
     if not user_dict:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
+        raise HTTPException(
+            status_code=400, detail="Incorrect username or password")
     user = UserInDB(**user_dict)
     hashed_password = fake_hash_password(form_data.password)
     if not hashed_password == user.hashed_password:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
+        raise HTTPException(
+            status_code=400, detail="Incorrect username or password")
 
     return {"access_token": user.username, "token_type": "bearer"}
 
@@ -91,15 +93,18 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
     return current_user
 
+
 @app.post("/shorten")
-async def (url:str, shortened_url:str):
+async def save_shortened_urls(url: str, shortened_url: str):
     if (shortened_url in urls):
-        raise HTTPException(status_code=400, detail="shortened url already used")
+        raise HTTPException(
+            status_code=400, detail="shortened url already used")
     urls[shortened_url] = url
-    return {"shortened_url": shortened_url, "all_urls":urls}
+    return {"shortened_url": shortened_url, "all_urls": urls}
+
 
 @app.get("/shorten/{shortened_url}")
-async def get_full_url(shortened_url:str):
+async def get_full_url(shortened_url: str):
     if (shortened_url not in urls):
         raise HTTPException(status_code=404, detail="shortened url not found")
     return {"url": urls[shortened_url]}
