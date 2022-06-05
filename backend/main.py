@@ -92,7 +92,7 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)):
     return current_user
 
 @app.post("/shorten")
-async def store_shortened_url(url:str, shortened_url:str):
+async def (url:str, shortened_url:str):
     if (shortened_url in urls):
         raise HTTPException(status_code=400, detail="shortened url already used")
     urls[shortened_url] = url
