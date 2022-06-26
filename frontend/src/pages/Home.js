@@ -9,12 +9,14 @@ import {
   StatNumber,
   StatHelpText,
   StatArrow,
-  Box,
+  useToast,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { LinkIcon } from "@chakra-ui/icons";
 import React, { useState } from "react";
 import LinkCard from "../components/LinkCard";
 import Nav from "../components/Nav/Nav";
+import { FiClipboard } from "react-icons/fi";
 
 const static_links = [
   { date: "25 Jun", title: "Hola que tal", shortUrl: "3bsPLCW1", clicks: 19 },
@@ -24,6 +26,7 @@ const static_links = [
 function Home() {
   const [links, setLinks] = useState(static_links);
   const [selected, setSelected] = useState(0);
+  const toast = useToast();
   return (
     <>
       <Flex height={"100vh"} flexDirection="column">
@@ -65,19 +68,43 @@ function Home() {
                   Mati Pavan
                 </Link>
               </Text>
-              <Box
+              <Flex
                 bg={useColorModeValue("gray.200", "gray.700")}
+                alignItems="center"
                 p={3}
                 rounded={12}
                 mx={"1%"}
                 my={5}
                 borderWidth={2}
                 borderColor={useColorModeValue("telegram.400", "telegram.700")}
+                justifyContent="space-between"
               >
-                <Text fontSize="xl" fontWeight={700}>
-                  bit.ly/{links[selected].shortUrl}
-                </Text>
-              </Box>
+                <Flex alignItems="center">
+                  <LinkIcon mr={3} />
+                  <Text fontSize="xl" fontWeight={700}>
+                    bit.ly/{links[selected].shortUrl}
+                  </Text>
+                </Flex>
+                <Link
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      "bit.ly/" + links[selected].shortUrl
+                    );
+                    toast({
+                      title: "Copied link to clipboard.",
+                      status: "info",
+                      variant: "left-accent",
+                      duration: 2000,
+                      position: "bottom-right",
+                    });
+                  }}
+                >
+                  <Flex alignItems="center">
+                    <FiClipboard />
+                    <Text ml={1.5}>Copy</Text>
+                  </Flex>
+                </Link>
+              </Flex>
               <Stat>
                 <StatLabel>Clicks</StatLabel>
                 <StatNumber>{links[selected].clicks}</StatNumber>
