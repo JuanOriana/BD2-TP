@@ -10,24 +10,26 @@ import {
   StatHelpText,
   StatArrow,
   Box,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import LinkCard from "../components/LinkCard";
 import Nav from "../components/Nav/Nav";
 
-const links = [
+const static_links = [
   { date: "25 Jun", title: "Hola que tal", shortUrl: "3bsPLCW1", clicks: 19 },
   { date: "13 Jan", title: "Otro", shortUrl: "4206969", clicks: 341 },
   { date: "8 Dec", title: "Yet Another", shortUrl: "xdLmao132", clicks: 9 },
 ];
 function Home() {
+  const [links, setLinks] = useState(static_links);
   const [selected, setSelected] = useState(0);
   return (
     <>
       <Flex height={"100vh"} flexDirection="column">
         <Nav />
         <Flex flexDirection="column" flex={1}>
-          <Heading ml={14} py={2}>
+          <Heading fontSize="3xl" ml={8} mt={4} mb={2}>
             Links
           </Heading>
           <Divider />
@@ -37,7 +39,7 @@ function Home() {
               width={350}
               maxWidth="40%"
               height="100%"
-              bg="gray.700"
+              bg={useColorModeValue("gray.200", "gray.700")}
             >
               {links.map((link, idx) => (
                 <>
@@ -46,7 +48,11 @@ function Home() {
                     title={link.title}
                     shortUrl={link.shortUrl}
                     selected={selected == idx}
-                    onClick={() => setSelected(idx)}
+                    onClick={() => {
+                      const links_cpy = [...links];
+                      links_cpy[selected].clicks += 1;
+                      setSelected(idx);
+                    }}
                   />
                 </>
               ))}
@@ -55,16 +61,18 @@ function Home() {
               <Heading>{links[selected].title}</Heading>
               <Text>
                 {links[selected].date} by{" "}
-                <Link color="telegram.300">Mati Pavan</Link>
+                <Link color={useColorModeValue("telegram.500", "telegram.300")}>
+                  Mati Pavan
+                </Link>
               </Text>
               <Box
-                bg="gray.700"
+                bg={useColorModeValue("gray.200", "gray.700")}
                 p={3}
                 rounded={12}
                 mx={"1%"}
                 my={5}
                 borderWidth={2}
-                borderColor={"telegram.700"}
+                borderColor={useColorModeValue("telegram.400", "telegram.700")}
               >
                 <Text fontSize="xl" fontWeight={700}>
                   bit.ly/{links[selected].shortUrl}

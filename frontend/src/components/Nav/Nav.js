@@ -26,7 +26,7 @@ export default function Nav() {
     <>
       <Box bg={useColorModeValue("gray.300", "gray.900")} px={4}>
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
-          <Heading pl={3}>bit.ly</Heading>
+          <Heading pl={3}>shaw.ty</Heading>
 
           <Flex alignItems={"center"}>
             <Stack direction={"row"} spacing={7}>
