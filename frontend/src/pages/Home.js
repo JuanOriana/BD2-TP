@@ -123,7 +123,7 @@ function Home() {
             </Flex>
           </Flex>
         </Flex>
-        <footer>lmao</footer>
+        {/* <footer>lmao</footer> */}
       </Flex>
     </>
   );
