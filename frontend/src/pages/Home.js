@@ -62,7 +62,7 @@ function Home() {
             </Flex>
             <Flex flexDirection="column" width="100%" p={3}>
               <Heading>{links[selected].title}</Heading>
-              <Text>
+              <Text mb={1} ml={6} opacity={0.8}>
                 {links[selected].date} by{" "}
                 <Link color={useColorModeValue("telegram.500", "telegram.300")}>
                   Mati Pavan
@@ -105,10 +105,18 @@ function Home() {
                   </Flex>
                 </Link>
               </Flex>
-              <Stat>
-                <StatLabel>Clicks</StatLabel>
-                <StatNumber>{links[selected].clicks}</StatNumber>
-                <StatHelpText>
+              <Stat
+                alignSelf={"end"}
+                mr={30}
+                bg={"gray.700"}
+                w={120}
+                maxH={120}
+                p={3}
+                rounded={10}
+              >
+                <StatLabel fontSize="xl">Clicks</StatLabel>
+                <StatNumber fontSize="3xl">{links[selected].clicks}</StatNumber>
+                <StatHelpText fontSize="l">
                   <StatArrow type="increase" /> 9.06%
                 </StatHelpText>
               </Stat>
