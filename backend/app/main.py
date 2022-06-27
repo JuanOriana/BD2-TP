@@ -1,7 +1,7 @@
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api import links, users, short, token
+from app.api import links, users, token
 
 def get_application():
     _app = FastAPI(title=settings.PROJECT_NAME)
@@ -20,5 +20,4 @@ def get_application():
 app = get_application()
 app.include_router(links.router, prefix="/links", tags=["links"])
 app.include_router(users.router, prefix="/users", tags=["users"])
-app.include_router(short.router, prefix="/short", tags=["shorten url"])
 app.include_router(token.router, prefix="/token", tags=["login"])
