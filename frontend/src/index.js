@@ -7,6 +7,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import EditUser from "./pages/EditUser";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import KeyRedirect from "./pages/KeyRedirect";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -18,6 +19,7 @@ root.render(
           <Route path="signin" element={<SignIn />} />
           <Route path="signup" element={<SignUp />} />
           <Route path="edit-user" element={<EditUser />} />
+          <Route path="link/:key" element={<KeyRedirect />} />
         </Routes>
       </BrowserRouter>
     </ChakraProvider>

@@ -50,7 +50,7 @@ function Home() {
                     date={link.date}
                     title={link.title}
                     shortUrl={link.shortUrl}
-                    selected={selected == idx}
+                    selected={selected === idx}
                     onClick={() => {
                       const links_cpy = [...links];
                       links_cpy[selected].clicks += 1;
