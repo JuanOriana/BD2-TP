@@ -8,9 +8,10 @@ import SignUp from "./pages/SignUp";
 import EditUser from "./pages/EditUser";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import KeyRedirect from "./pages/KeyRedirect";
-import AdminPanel from "./pages/AdminPanel";
+import AdminPanel from "./pages/Admin/AdminPanel";
 import Error404 from "./pages/Error404";
 import Layout from "./components/Layout/Layout";
+import Plans from "./pages/Admin/Plans";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -24,6 +25,7 @@ root.render(
             <Route path="signup" element={<SignUp/>}/>
             <Route path="edit-user" element={<EditUser/>}/>
             <Route path="admin" element={<AdminPanel/>}/>
+            <Route path="admin/plans" element={<Plans/>}/>
             <Route path="link/:key" element={<KeyRedirect />} />
             <Route path="*" element={<Error404/>}/>
           </Route>
