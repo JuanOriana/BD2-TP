@@ -8,7 +8,9 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
     REDIS_HOSTNAME: str
     REDIS_PORT: int
+    REDIS_PASSWORD: str
     MONGODB_URL: str
+
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
