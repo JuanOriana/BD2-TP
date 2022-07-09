@@ -12,17 +12,17 @@ import {
   useToast,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { LinkIcon } from "@chakra-ui/icons";
-import React, { useState } from "react";
+import {LinkIcon} from "@chakra-ui/icons";
+import React, {useState} from "react";
 import LinkCard from "../components/LinkCard";
-import Nav from "../components/Nav/Nav";
-import { FiClipboard } from "react-icons/fi";
+import {FiClipboard} from "react-icons/fi";
 
 const static_links = [
-  { date: "25 Jun", title: "Hola que tal", shortUrl: "3bsPLCW1", clicks: 19 },
-  { date: "13 Jan", title: "Otro", shortUrl: "4206969", clicks: 341 },
-  { date: "8 Dec", title: "Yet Another", shortUrl: "xdLmao132", clicks: 9 },
+  {date: "25 Jun", title: "Hola que tal", shortUrl: "3bsPLCW1", clicks: 19},
+  {date: "13 Jan", title: "Otro", shortUrl: "4206969", clicks: 341},
+  {date: "8 Dec", title: "Yet Another", shortUrl: "xdLmao132", clicks: 9},
 ];
+
 function Home() {
   const [links, setLinks] = useState(static_links);
   const [selected, setSelected] = useState(0);
@@ -30,12 +30,11 @@ function Home() {
   return (
     <>
       <Flex height={"100vh"} flexDirection="column">
-        <Nav />
         <Flex flexDirection="column" flex={1}>
           <Heading fontSize="3xl" ml={8} mt={4} mb={2}>
             Links
           </Heading>
-          <Divider />
+          <Divider/>
           <Flex width="100%" height="100%">
             <Flex
               flexDirection="column"
@@ -50,7 +49,7 @@ function Home() {
                     date={link.date}
                     title={link.title}
                     shortUrl={link.shortUrl}
-                    selected={selected == idx}
+                    selected={selected === idx}
                     onClick={() => {
                       const links_cpy = [...links];
                       links_cpy[selected].clicks += 1;
@@ -80,7 +79,7 @@ function Home() {
                 justifyContent="space-between"
               >
                 <Flex alignItems="center">
-                  <LinkIcon mr={3} />
+                  <LinkIcon mr={3}/>
                   <Text fontSize="xl" fontWeight={700}>
                     bit.ly/{links[selected].shortUrl}
                   </Text>
@@ -100,7 +99,7 @@ function Home() {
                   }}
                 >
                   <Flex alignItems="center">
-                    <FiClipboard />
+                    <FiClipboard/>
                     <Text ml={1.5}>Copy</Text>
                   </Flex>
                 </Link>
@@ -108,7 +107,7 @@ function Home() {
               <Stat
                 alignSelf={"end"}
                 mr={30}
-                bg={"gray.700"}
+                bg={useColorModeValue("gray.200", "gray.700")}
                 w={120}
                 maxH={120}
                 p={3}
@@ -117,7 +116,7 @@ function Home() {
                 <StatLabel fontSize="xl">Clicks</StatLabel>
                 <StatNumber fontSize="3xl">{links[selected].clicks}</StatNumber>
                 <StatHelpText fontSize="l">
-                  <StatArrow type="increase" /> 9.06%
+                  <StatArrow type="increase"/> 9.06%
                 </StatHelpText>
               </Stat>
             </Flex>
