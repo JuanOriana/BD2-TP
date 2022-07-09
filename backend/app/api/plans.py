@@ -14,16 +14,13 @@ def get_standard_plan():
         status_code = status.HTTP_200_OK
     )
 async def get_all_plans():
-    plans = []
-    for plan in plan_collection.find():
-        ext_plan = ExtPlan(**plan)
-        ext_plan.id = str(plan["_id"])
-        plans.append(ext_plan)
-    return plans
+    return list(plan_collection.find())
+    
+    
 
 @router.get(
         "/{plan_id}", 
-        response_model = Plan, 
+        response_model = ExtPlan,
         status_code = status.HTTP_200_OK)
 async def get_all_plans(
         plan_id : str
@@ -31,4 +28,4 @@ async def get_all_plans(
     plan = plan_collection.find_one({"_id": ObjectId(plan_id)})
     if not plan:
         raise HTTPException(status_code=404, detail="Plan not found")
-    return Plan(**plan)
+    return ExtPlan(**plan)

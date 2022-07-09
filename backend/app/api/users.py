@@ -1,14 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from bson.objectid import ObjectId
 from passlib.context import CryptContext
 from app.api.plans import get_standard_plan
 from app.core.schemas.user import User, UserInDB
 from app.core.schemas.token_data import TokenData
 from app.core.schemas.url import URLInfo
 from app.core.models.user_register import UserRegister
-from app.core.schemas.plan import Plan
+from app.core.schemas.plan import Plan, ExtPlan
 from app.core.config import settings
 from app.database import user_collection, plan_collection, link_collection
 
@@ -103,7 +102,7 @@ async def get_user_links_by_username(
 
 @router.get(
         "/{username}/plan", 
-        response_model = Plan, 
+        response_model = ExtPlan, 
         status_code = status.HTTP_200_OK
     )
 async def get_user_plan_by_username(
@@ -111,13 +110,13 @@ async def get_user_plan_by_username(
         current_user: User = Depends(get_current_user)
     ):
     if(current_user["username"] == username or current_user["is_admin"]):
-        plan = plan_collection.find_one({"_id": ObjectId(current_user["plan_id"])})
-        if not plan:
+        user = user_collection.find_one({"username": username})
+        if not user:
             raise HTTPException(
                     status_code=404, 
-                    detail="Plan not found",
+                    detail="User not found",
                 )
-        return Plan(**plan)
+        return ExtPlan(**user["plan"])
     else:
         raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN, 
@@ -137,7 +136,7 @@ async def register(
         "username": user.username,
         "email": user.email,
         "password": pwd_context.hash(user.password),
-        "is_admin": false,
+        "is_admin": False,
         "plan": get_standard_plan(),
     }
     user = user_collection.find_one({"username": new_user["username"]})
