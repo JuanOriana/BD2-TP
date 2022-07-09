@@ -12,10 +12,16 @@ from app.api.users import pwd_context
 
 router = APIRouter()
 
-def verify_password(plain_password, hashed_password):
+def verify_password(
+        plain_password, 
+        hashed_password
+    ):
     return pwd_context.verify(plain_password, hashed_password)
 
-def authenticate_user(username: str, password: str):
+def authenticate_user(
+        username: str, 
+        password: str
+    ):
     user = user_collection.find_one({"username": username})
     if not user:
         return False
@@ -23,7 +29,10 @@ def authenticate_user(username: str, password: str):
         return False
     return user
 
-def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
+def create_access_token(
+        data: dict, 
+        expires_delta: Union[timedelta, None] = None
+    ):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -33,8 +42,14 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
 
-@router.post("", response_model=Token, status_code=201)
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+@router.post(
+        "", 
+        response_model = Token, 
+        status_code = 201
+    )
+async def login(
+        form_data: OAuth2PasswordRequestForm = Depends()
+    ):
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(

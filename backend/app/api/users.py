@@ -1,61 +1,174 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from fastapi.security import OAuth2PasswordBearer
-from app.core.schemas.user import User, UserInDB
-from app.core.schemas.url import URLInfo
-from app.core.schemas.plan import Plan
-from app.database import fake_users_db
-from app.core.models.user_register import UserRegister
-from app.database import user_collection
+from jose import JWTError, jwt
+from bson.objectid import ObjectId
 from passlib.context import CryptContext
-
+from app.api.plans import get_standard_plan
+from app.core.schemas.user import User, UserInDB
+from app.core.schemas.token_data import TokenData
+from app.core.schemas.url import URLInfo
+from app.core.models.user_register import UserRegister
+from app.core.schemas.plan import Plan
+from app.core.config import settings
+from app.database import user_collection, plan_collection, link_collection
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 router = APIRouter()
 
-# GETs
-@router.get("", response_model=list[User], status_code=200)
-async def get_all_users():
-    return []
+async def get_current_user(
+        token: str = Depends(oauth2_scheme)
+    ):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except JWTError:
+        raise credentials_exception
+    user = user_collection.find_one({"username": username})
+    if user is None:
+        raise credentials_exception
+    return user
 
-@router.get("/me", response_model=User, status_code=200)
-async def get_current_user(current_user: User = Depends()):
+# GETs
+
+#TO_DO: add pagination?
+@router.get(
+        "", 
+        response_model = list[User], 
+        status_code = status.HTTP_200_OK
+    )
+async def get_all_users(
+        current_user: User = Depends(get_current_user)
+    ):
+    if not current_user["is_admin"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have permission to access this resource",
+        )
+    users = list(user_collection.find())
+    return users
+
+@router.get(
+        "/me", 
+        response_model = User, 
+        status_code = status.HTTP_200_OK
+    )
+async def get_current_user_profile(
+        current_user: User = Depends(get_current_user)
+    ):
     return current_user
 
-@router.get("/{username}", response_model=User, status_code=200)
-async def get_user_by_username(username: str):
-    return {"username": username}
+@router.get(
+        "/{username}", 
+        response_model = User, 
+        status_code = status.HTTP_200_OK
+    )
+async def get_user_by_username(
+        username: str, 
+        current_user: User = Depends(get_current_user)
+    ):
+    if(current_user["username"] == username or current_user["is_admin"]):
+        return current_user
+    else:
+        raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail="You don't have permission to access this resource",
+            )
 
-@router.get("/{username}/links", response_model=list[URLInfo], status_code=200)
-async def get_user_links_by_username(username: str):
-    return []
+@router.get(
+        "/{username}/links", 
+        response_model = list[URLInfo], 
+        status_code = status.HTTP_200_OK
+    )
+async def get_user_links_by_username(
+        username: str, 
+        current_user: User = Depends(get_current_user)
+    ):
+    if(current_user["username"] == username or current_user["is_admin"]):
+        links = list(link_collection.find({"author.username": username}))
+        return links
+    else:
+        raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail="You don't have permission to access this resource",
+            )
 
-@router.get("/{username}/plan", response_model=Plan, status_code=200)
-async def get_user_plan_by_username(username: str):
-    return {"plan_id": 1, "expiration_days": 30, "max_url_count": 5000} 
+@router.get(
+        "/{username}/plan", 
+        response_model = Plan, 
+        status_code = status.HTTP_200_OK
+    )
+async def get_user_plan_by_username(
+        username: str, 
+        current_user: User = Depends(get_current_user)
+    ):
+    if(current_user["username"] == username or current_user["is_admin"]):
+        plan = plan_collection.find_one({"_id": ObjectId(current_user["plan_id"])})
+        if not plan:
+            raise HTTPException(
+                    status_code=404, 
+                    detail="Plan not found",
+                )
+        return Plan(**plan)
+    else:
+        raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail="You don't have permission to access this resource",
+            )
 
 # POSTs
 
-@router.post("", status_code=201)
-async def register_user(user: UserRegister):
+@router.post(
+        "", 
+        status_code = status.HTTP_201_CREATED
+    )
+async def register(
+        user: UserRegister
+    ):
     new_user = {
         "username": user.username,
         "email": user.email,
-        "password": pwd_context.hash(user.password)
+        "password": pwd_context.hash(user.password),
+        "is_admin": false,
+        "plan": get_standard_plan(),
     }
-    user_exists = user_collection.find_one({"username": new_user["username"]})
-    email_exists = user_collection.find_one({"email": new_user["email"]})
+    user = user_collection.find_one({"username": new_user["username"]})
+    email = user_collection.find_one({"email": new_user["email"]})
 
-    if not user_exists and not email_exists:
+    if not user and not email:
 	    user_collection.insert_one(new_user)
 	    return {}
     else:
-	    raise HTTPException(status_code=409, detail="Username/email already exists")
+	    raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT, 
+                detail="Username/email already exists"
+            )
 
 
 # DELETEs
-@router.delete("/{username}", status_code=204)
-async def delete_user_by_username(username: str):
-    return 
+@router.delete(
+        "/{username}", 
+        status_code = status.HTTP_200_OK
+    )
+async def delete_user_by_username(
+        username: str, 
+        current_user: User = Depends(get_current_user),
+        response_class=Response,
+    ):
+    if not current_user["is_admin"]:
+        raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail="You don't have permission to access this resource"
+            )
+    user_collection.delete_one({"username": username})
+    return {}
 
 

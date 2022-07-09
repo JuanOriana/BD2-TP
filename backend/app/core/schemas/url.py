@@ -10,10 +10,9 @@ class URL(URLBase):
     short_url: Union[str, None] = None
 
 class URLInfo(URL):
-    short_url: str
     is_active: bool
     clicks: int
     creation_date: date
-    owner: User
+    author: User
     
 
