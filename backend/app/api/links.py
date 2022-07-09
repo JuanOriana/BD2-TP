@@ -1,41 +1,149 @@
-from fastapi import APIRouter, HTTPException
+import validators, random
+from fastapi import APIRouter, HTTPException, status, Depends
 from datetime import datetime
-import validators
 from app.core.schemas.url import *
+from app.api.users import get_current_user
+from app.database import link_collection, redis_db
 
 router = APIRouter()
 
-def gen_mock_url(target, title):
-    mock_url = {
-        "target_url": target,
+def get_short_link_owner(short_url):
+    link = link_collection.find_one({"short_url": short_url})
+    if not link:
+        raise HTTPException(
+                status_code = status.HTTP_404_NOT_FOUND, 
+                detail = "Link not found"
+            )
+    return link["author"]
+
+def generate_short_url():
+    short_url = ""
+    for i in range(7):
+        short_url += chr(ord('a') + random.randint(0, 25))
+    return short_url
+
+def populate_redis_link(short_url, long_url, expiration):
+    redis_db.set(short_url, long_url)
+    redis_db.expire(short_url, expiration)
+
+def populate_mongo_link(short_url, long_url, title, author):
+    link = {
+        "short_url": short_url,
+        "target_url": long_url,
         "title": title,
-        "short_url": "T3S71N6",
-        "is_active": True,
-        "clicks": 0,
+        "author": author,
         "creation_date": datetime.now(),
-        "owner": {"username": "mpavan"}
+        "clicks": 0,
     }
+    link_collection.insert_one(link)
+    return link
 
-# Add middleware checks
-
-@router.post("", response_model=URLInfo, status_code=201)
-async def shorten_url(payload: URL):
+@router.post(
+        "", 
+        response_model = URLInfo, 
+        status_code = status.HTTP_201_CREATED
+    )
+async def shorten_url(
+        payload: URL,
+        current_user: User = Depends(get_current_user)
+    ):
     if not validators.url(payload.target_url):
-        raise HTTPException(status_code=400, detail="The provided URL is not valid")
-    return gen_mock_url(payload.target_url, payload.title)
+        raise HTTPException(
+                status_code = status.HTTP_400_BAD_REQUEST, 
+                detail = "The provided URL is not valid"
+            )
+    if payload.short_url:
+        if redis_db.exists(payload.short_url):
+            raise HTTPException(
+                    status_code = status.HTTP_400_BAD_REQUEST, 
+                    detail = "The provided short URL is already in use"
+                )
+        populate_redis_link(payload.short_url, payload.target_url, current_user["plan"]["expiration_days"] * 86400)
+        return populate_mongo_link(payload.short_url, payload.target_url, payload.title, current_user)
 
-@router.get("", response_model=list[URLInfo], status_code=200)
-async def get_all_shortened_urls():
-    return [gen_mock_url("aa", "bb")]
+    short_url = generate_short_url()
+    while redis_db.exists(short_url):
+        short_url = generate_short_url()
+    print(current_user)
+    populate_redis_link(short_url, payload.target_url, current_user["plan"]["expiration_days"] * 86400)
+    return populate_mongo_link(short_url, payload.target_url, payload.title, current_user)
 
-@router.delete("/{short_key}", status_code=204)
-async def delete_link_by_short_key(short_key: str):
-    return
+#TO_DO: add pagination
+@router.get(
+        "", 
+        response_model = list[URLInfo], 
+        status_code = status.HTTP_200_OK
+    )
+async def get_all_shortened_urls(
+        current_user: User = Depends(get_current_user)
+    ):
+    if not current_user["is_admin"]:
+        raise HTTPException(
+            status_code = status.HTTP_403_FORBIDDEN,
+            detail = "You don't have permission to access this resource",
+        )
+    return list(link_collection.find())
 
-@router.get("/{short_key}", response_model=URLInfo, status_code=200)
-async def get_link_by_short_key(short_key: str):
-    return gen_mock_url("aa", "bb")
+@router.delete(
+        "/{short_key}", 
+        status_code = status.HTTP_200_OK
+    )
+async def delete_link_by_short_key(
+        short_key: str,
+        current_user: User = Depends(get_current_user)
+    ):
+    if not current_user["is_admin"] or get_short_link_owner(short_key) != current_user:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have permission to access this resource",
+        )
+    link_collection.delete_one({"short_url": short_key})
+    return {}
 
-@router.put("/{short_key}", response_model=URLInfo, status_code=200)
-async def modify_link_by_short_key(short_key: str, new_short_key: str):
-    return gen_mock_url("aa", "bb")
+@router.get(
+        "/{short_key}", 
+        response_model = URLBase, 
+        status_code = status.HTTP_200_OK
+    )
+async def get_link_by_short_key(
+        short_key: str,
+        current_user: User = Depends(get_current_user)
+    ):
+    print(get_short_link_owner(short_key)["username"])
+    print(current_user["username"])
+    if not current_user["is_admin"] and get_short_link_owner(short_key)["username"] != current_user["username"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have permission to access this resource",
+        )
+    return URLBase(target_url = redis_db.get(short_key))
+
+@router.get(
+        "/{short_key}/metadata", 
+        response_model = URLInfo, 
+        status_code = status.HTTP_200_OK
+    )
+async def get_link_metadata_by_short_key(
+        short_key: str,
+        current_user: User = Depends(get_current_user)
+    ):
+    if not current_user["is_admin"] and get_short_link_owner(short_key)["username"] != current_user["username"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have permission to access this resource",
+        )
+    return link_collection.find_one({"short_url": short_key})
+
+
+#TODO
+@router.put(
+        "/{short_key}", 
+        response_model = URLInfo, 
+        status_code = status.HTTP_200_OK
+    )
+async def modify_link_by_short_key(
+        short_key: str, 
+        new_short_key: str,
+        
+    ):
+    return 
