@@ -123,7 +123,7 @@ async def get_user_plan_by_username(
                 detail="You don't have permission to access this resource",
             )
 
-# POSTs
+# # POSTs
 
 @router.post(
         "", 
@@ -160,7 +160,6 @@ async def register(
 async def delete_user_by_username(
         username: str, 
         current_user: User = Depends(get_current_user),
-        response_class=Response,
     ):
     if not current_user["is_admin"]:
         raise HTTPException(
