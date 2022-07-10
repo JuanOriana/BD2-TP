@@ -3,6 +3,9 @@ import {
   Box,
   FormControl,
   FormLabel,
+  Alert,
+  AlertIcon,
+  AlertTitle,
   Input,
   Checkbox,
   Stack,
@@ -75,6 +78,12 @@ export default function SignIn() {
                   <RouterLink to="/signup">Don't have an account?</RouterLink>
                 </Link>
               </Stack>
+              {invalidCred && (
+                <Alert status="error">
+                  <AlertIcon />
+                  <AlertTitle>Your credentials are invalid</AlertTitle>
+                </Alert>
+              )}
               <Button
                 bg={"blue.400"}
                 color={"white"}
