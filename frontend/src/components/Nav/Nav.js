@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import {
   Box,
   Flex,
@@ -28,13 +28,17 @@ import {
   VStack,
   FormLabel,
 } from "@chakra-ui/react";
-import {MoonIcon, SunIcon} from "@chakra-ui/icons";
-import {Link} from "react-router-dom";
-
+import { MoonIcon, SunIcon } from "@chakra-ui/icons";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 export default function Nav() {
-  const {colorMode, toggleColorMode} = useColorMode();
-  const {isOpen, onOpen, onClose} = useDisclosure();
+  const { colorMode, toggleColorMode } = useColorMode();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [newUrl, setNewUrl] = useState("x49L42");
+  const { signout } = useAuth();
+  const navigate = useNavigate();
+
   const btnRef = React.useRef();
   return (
     <>
@@ -48,7 +52,7 @@ export default function Nav() {
                 CREATE LINK
               </Button>
               <Button onClick={toggleColorMode}>
-                {colorMode === "light" ? <MoonIcon/> : <SunIcon/>}
+                {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
               </Button>
 
               <Menu>
@@ -65,19 +69,19 @@ export default function Nav() {
                   />
                 </MenuButton>
                 <MenuList alignItems={"center"}>
-                  <br/>
+                  <br />
                   <Center>
                     <Avatar
                       size={"2xl"}
                       src={"https://avatars.dicebear.com/api/male/username.svg"}
                     />
                   </Center>
-                  <br/>
+                  <br />
                   <Center>
                     <p>Mati Pavan</p>
                   </Center>
-                  <br/>
-                  <MenuDivider/>
+                  <br />
+                  <MenuDivider />
                   <Link to="/">
                     <MenuItem>Your Servers</MenuItem>
                   </Link>
@@ -87,11 +91,17 @@ export default function Nav() {
                   <Link to="/edit-user">
                     <MenuItem>Settings</MenuItem>
                   </Link>
-                  <Link to="signin">
-                    <MenuItem color={"red.700"} fontWeight="bold">
-                      Logout
-                    </MenuItem>
-                  </Link>
+                  <MenuItem
+                    color={"red.700"}
+                    fontWeight="bold"
+                    onClick={() =>
+                      signout(() => {
+                        navigate("/", { replace: true });
+                      })
+                    }
+                  >
+                    Logout
+                  </MenuItem>
                 </MenuList>
               </Menu>
             </Stack>
@@ -106,20 +116,20 @@ export default function Nav() {
         onClose={onClose}
         finalFocusRef={btnRef}
       >
-        <DrawerOverlay/>
+        <DrawerOverlay />
         <DrawerContent>
-          <DrawerCloseButton/>
+          <DrawerCloseButton />
           <DrawerHeader>Create link</DrawerHeader>
 
           <DrawerBody>
             <VStack align="start">
               <FormLabel>Title</FormLabel>
-              <Input placeholder="Enter title"/>
+              <Input placeholder="Enter title" />
               <FormLabel>Long url</FormLabel>
-              <Input placeholder="Enter long url"/>
+              <Input placeholder="Enter long url" />
               <FormLabel>Short url</FormLabel>
               <InputGroup>
-                <InputLeftAddon children="shaw.ty/"/>
+                <InputLeftAddon children="shaw.ty/" />
                 <Input
                   placeholder="Enter short url"
                   value={newUrl}

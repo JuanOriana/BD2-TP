@@ -12,9 +12,21 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function SignIn() {
+  const { signin } = useAuth();
+  const [username, setUsername] = useState();
+  const [password, setPassword] = useState();
+  let navigate = useNavigate();
+  let location = useLocation();
+  // @ts-ignore
+  let from = location.state?.from?.pathname || "/home";
+  const [invalidCred, setInvalidCred] = useState(false);
+
   return (
     <Flex
       minH={"100vh"}
@@ -38,11 +50,19 @@ export default function SignIn() {
           <Stack spacing={4}>
             <FormControl id="username">
               <FormLabel>Username</FormLabel>
-              <Input type="email" />
+              <Input
+                type="email"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
             </FormControl>
             <FormControl id="password">
               <FormLabel>Password</FormLabel>
-              <Input type="password" />
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </FormControl>
             <Stack spacing={10}>
               <Stack
@@ -61,6 +81,20 @@ export default function SignIn() {
                 _hover={{
                   bg: "blue.500",
                 }}
+                onClick={() =>
+                  signin(
+                    {
+                      username,
+                      password,
+                      isAdmin: false,
+                      email: "hola@mail.com",
+                    },
+                    () => {
+                      console.log(from);
+                      navigate(from, { replace: true });
+                    }
+                  )
+                }
               >
                 Sign in
               </Button>
