@@ -51,10 +51,10 @@ const PublicHome = () => {
                 use everywhere!
               </Text>
             </Heading>
-            <Text color={"gray.500"}>
-              Snippy is a rich coding snippets app that lets you create your own
-              code snippets, categorize them, and even sync them in the cloud so
-              you can use them anywhere. All that is free!
+            <Text color={useColorModeValue("gray.600", "gray.400")}>
+              Shawty is a high performing URL shortener that lets you create
+              your own shortened urls, organize them, see how well they perform,
+              and share them with your colleagues. All that for free!
             </Text>
             <Stack
               spacing={{ base: 4, sm: 6 }}
