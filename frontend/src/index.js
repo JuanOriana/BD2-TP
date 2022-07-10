@@ -14,6 +14,7 @@ import Layout from "./components/Layout/Layout";
 import Plans from "./pages/Admin/Plans";
 import { AuthProvider } from "./contexts/AuthContext";
 import RequireAuth from "./components/RequireAuth";
+import Users from "./pages/Admin/Users";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -35,6 +36,7 @@ root.render(
               <Route path="edit-user" element={<EditUser />} />
               <Route path="admin" element={<AdminPanel />} />
               <Route path="admin/plans" element={<Plans />} />
+              <Route path="admin/users" element={<Users />} />
             </Route>
             <Route path="signin" element={<SignIn />} />
             <Route path="signup" element={<SignUp />} />
