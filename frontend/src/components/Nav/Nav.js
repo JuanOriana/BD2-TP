@@ -32,7 +32,9 @@ export default function Nav() {
     <>
       <Box bg={useColorModeValue("gray.300", "gray.900")} px={4}>
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
-          <Heading pl={3}>shaw.ty</Heading>
+          <Link to="/">
+            <Heading pl={3}>shaw.ty</Heading>
+          </Link>
           {user && (
             <Flex alignItems={"center"}>
               <Stack direction={"row"} spacing={7}>
@@ -68,18 +70,18 @@ export default function Nav() {
                     </Center>
                     <br />
                     <Center>
-                      <p>Mati Pavan</p>
+                      <p>{user.username}</p>
                     </Center>
                     <br />
                     <MenuDivider />
                     <Link to="/">
-                      <MenuItem>Your Servers</MenuItem>
+                      <MenuItem>Your Links</MenuItem>
                     </Link>
                     <Link to="/admin">
                       <MenuItem>Administrator Panel</MenuItem>
                     </Link>
                     <Link to="/edit-user">
-                      <MenuItem>Settings</MenuItem>
+                      <MenuItem>Edit Profile</MenuItem>
                     </Link>
                     <MenuItem
                       color={"red.700"}
