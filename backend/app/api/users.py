@@ -127,7 +127,8 @@ async def get_user_plan_by_username(
 
 @router.post(
         "", 
-        status_code = status.HTTP_201_CREATED
+        status_code = status.HTTP_201_CREATED,
+        response_model = User
     )
 async def register(
         user: UserRegister
@@ -144,7 +145,7 @@ async def register(
 
     if not user and not email:
 	    user_collection.insert_one(new_user)
-	    return {}
+	    return new_user
     else:
 	    raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT, 
