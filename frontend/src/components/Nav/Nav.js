@@ -24,76 +24,92 @@ import CreateLinkDrawer from "../CreateLinkDrawer";
 export default function Nav() {
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { user } = useAuth();
   const { signout } = useAuth();
   const navigate = useNavigate();
-
   const btnRef = React.useRef();
   return (
     <>
       <Box bg={useColorModeValue("gray.300", "gray.900")} px={4}>
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           <Heading pl={3}>shaw.ty</Heading>
+          {user && (
+            <Flex alignItems={"center"}>
+              <Stack direction={"row"} spacing={7}>
+                <Button onClick={onOpen} ref={btnRef} colorScheme={"telegram"}>
+                  CREATE LINK
+                </Button>
+                <Button onClick={toggleColorMode}>
+                  {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+                </Button>
 
-          <Flex alignItems={"center"}>
-            <Stack direction={"row"} spacing={7}>
-              <Button onClick={onOpen} ref={btnRef} colorScheme={"telegram"}>
-                CREATE LINK
-              </Button>
-              <Button onClick={toggleColorMode}>
-                {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
-              </Button>
-
-              <Menu>
-                <MenuButton
-                  as={Button}
-                  rounded={"full"}
-                  variant={"link"}
-                  cursor={"pointer"}
-                  minW={0}
-                >
-                  <Avatar
-                    size={"sm"}
-                    src={"https://avatars.dicebear.com/api/male/username.svg"}
-                  />
-                </MenuButton>
-                <MenuList alignItems={"center"}>
-                  <br />
-                  <Center>
+                <Menu>
+                  <MenuButton
+                    as={Button}
+                    rounded={"full"}
+                    variant={"link"}
+                    cursor={"pointer"}
+                    minW={0}
+                  >
                     <Avatar
-                      size={"2xl"}
+                      size={"sm"}
                       src={"https://avatars.dicebear.com/api/male/username.svg"}
                     />
-                  </Center>
-                  <br />
-                  <Center>
-                    <p>Mati Pavan</p>
-                  </Center>
-                  <br />
-                  <MenuDivider />
-                  <Link to="/">
-                    <MenuItem>Your Servers</MenuItem>
-                  </Link>
-                  <Link to="/admin">
-                    <MenuItem>Administrator Panel</MenuItem>
-                  </Link>
-                  <Link to="/edit-user">
-                    <MenuItem>Settings</MenuItem>
-                  </Link>
-                  <MenuItem
-                    color={"red.700"}
-                    fontWeight="bold"
-                    onClick={() =>
-                      signout(() => {
-                        navigate("/", { replace: true });
-                      })
-                    }
-                  >
-                    Logout
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-            </Stack>
-          </Flex>
+                  </MenuButton>
+                  <MenuList alignItems={"center"}>
+                    <br />
+                    <Center>
+                      <Avatar
+                        size={"2xl"}
+                        src={
+                          "https://avatars.dicebear.com/api/male/username.svg"
+                        }
+                      />
+                    </Center>
+                    <br />
+                    <Center>
+                      <p>Mati Pavan</p>
+                    </Center>
+                    <br />
+                    <MenuDivider />
+                    <Link to="/">
+                      <MenuItem>Your Servers</MenuItem>
+                    </Link>
+                    <Link to="/admin">
+                      <MenuItem>Administrator Panel</MenuItem>
+                    </Link>
+                    <Link to="/edit-user">
+                      <MenuItem>Settings</MenuItem>
+                    </Link>
+                    <MenuItem
+                      color={"red.700"}
+                      fontWeight="bold"
+                      onClick={() =>
+                        signout(() => {
+                          navigate("/", { replace: true });
+                        })
+                      }
+                    >
+                      Logout
+                    </MenuItem>
+                  </MenuList>
+                </Menu>
+              </Stack>
+            </Flex>
+          )}
+
+          {!user && (
+            <Flex alignItems="center">
+              <Button onClick={toggleColorMode} mr={4}>
+                {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+              </Button>
+              <Link to="/signin">
+                <Button colorScheme="telegram" mr={4}>
+                  Sign in!
+                </Button>
+              </Link>
+            </Flex>
+          )}
         </Flex>
       </Box>
 

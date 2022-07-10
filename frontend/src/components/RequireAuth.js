@@ -13,8 +13,8 @@ function RequireAuth({ children }) {
     if (readUser && readUser !== "")
       signin(JSON.parse(readUser), rememberMe, () => navigate(location));
   }, []);
-  console.log(user);
-  if (!user && !readUser && location != "/") {
+  console.log(location);
+  if (!user && !readUser && location.pathname != "/") {
     // Redirect them to the /login page, but save the current location they were
     // trying to go to when they were redirected. This allows us to send them
     // along to that page after they login, which is a nicer user experience

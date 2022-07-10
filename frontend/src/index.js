@@ -39,7 +39,14 @@ root.render(
             <Route path="signin" element={<SignIn />} />
             <Route path="signup" element={<SignUp />} />
             <Route path="link/:key" element={<KeyRedirect />} />
-            <Route path="*" element={<Error404 />} />
+            <Route
+              path="*"
+              element={
+                <Layout>
+                  <Error404 />
+                </Layout>
+              }
+            />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
