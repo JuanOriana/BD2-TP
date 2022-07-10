@@ -11,22 +11,27 @@ import {
   StatArrow,
   useToast,
   useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
-import {LinkIcon} from "@chakra-ui/icons";
-import React, {useState} from "react";
+import { LinkIcon, EditIcon } from "@chakra-ui/icons";
+import React, { useState } from "react";
 import LinkCard from "../components/LinkCard";
-import {FiClipboard} from "react-icons/fi";
+import { FiClipboard } from "react-icons/fi";
+import EditLinkDrawer from "../components/EditLinkDrawer";
 
 const static_links = [
-  {date: "25 Jun", title: "Hola que tal", shortUrl: "3bsPLCW1", clicks: 19},
-  {date: "13 Jan", title: "Otro", shortUrl: "4206969", clicks: 341},
-  {date: "8 Dec", title: "Yet Another", shortUrl: "xdLmao132", clicks: 9},
+  { date: "25 Jun", title: "Hola que tal", shortUrl: "3bsPLCW1", clicks: 19 },
+  { date: "13 Jan", title: "Otro", shortUrl: "4206969", clicks: 341 },
+  { date: "8 Dec", title: "Yet Another", shortUrl: "xdLmao132", clicks: 9 },
 ];
 
 function Home() {
   const [links, setLinks] = useState(static_links);
   const [selected, setSelected] = useState(0);
   const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const btnRef = React.useRef();
+
   return (
     <>
       <Flex height={"100vh"} flexDirection="column">
@@ -34,7 +39,7 @@ function Home() {
           <Heading fontSize="3xl" ml={8} mt={4} mb={2}>
             Links
           </Heading>
-          <Divider/>
+          <Divider />
           <Flex width="100%" height="100%">
             <Flex
               flexDirection="column"
@@ -60,7 +65,16 @@ function Home() {
               ))}
             </Flex>
             <Flex flexDirection="column" width="100%" p={3}>
-              <Heading>{links[selected].title}</Heading>
+              <Flex px={3} width="100%" alignItems="center">
+                <Heading>{links[selected].title}</Heading>
+                <EditIcon
+                  ml={3}
+                  mt={1}
+                  cursor="pointer"
+                  onClick={onOpen}
+                  ref={btnRef}
+                />
+              </Flex>
               <Text mb={1} ml={6} opacity={0.8}>
                 {links[selected].date} by{" "}
                 <Link color={useColorModeValue("telegram.500", "telegram.300")}>
@@ -79,7 +93,7 @@ function Home() {
                 justifyContent="space-between"
               >
                 <Flex alignItems="center">
-                  <LinkIcon mr={3}/>
+                  <LinkIcon mr={3} />
                   <Text fontSize="xl" fontWeight={700}>
                     bit.ly/{links[selected].shortUrl}
                   </Text>
@@ -99,7 +113,7 @@ function Home() {
                   }}
                 >
                   <Flex alignItems="center">
-                    <FiClipboard/>
+                    <FiClipboard />
                     <Text ml={1.5}>Copy</Text>
                   </Flex>
                 </Link>
@@ -116,7 +130,7 @@ function Home() {
                 <StatLabel fontSize="xl">Clicks</StatLabel>
                 <StatNumber fontSize="3xl">{links[selected].clicks}</StatNumber>
                 <StatHelpText fontSize="l">
-                  <StatArrow type="increase"/> 9.06%
+                  <StatArrow type="increase" /> 9.06%
                 </StatHelpText>
               </Stat>
             </Flex>
@@ -124,6 +138,13 @@ function Home() {
         </Flex>
         {/* <footer>lmao</footer> */}
       </Flex>
+
+      <EditLinkDrawer
+        isOpen={isOpen}
+        onClose={onClose}
+        btnRef={btnRef}
+        link={links[selected]}
+      />
     </>
   );
 }

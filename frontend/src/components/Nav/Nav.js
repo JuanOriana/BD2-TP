@@ -15,27 +15,15 @@ import {
   useColorMode,
   Center,
   Heading,
-  Drawer,
-  DrawerBody,
-  DrawerOverlay,
-  DrawerCloseButton,
-  DrawerHeader,
-  DrawerContent,
-  DrawerFooter,
-  Input,
-  InputGroup,
-  InputLeftAddon,
-  VStack,
-  FormLabel,
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import CreateLinkDrawer from "../CreateLinkDrawer";
 export default function Nav() {
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [newUrl, setNewUrl] = useState("x49L42");
   const { signout } = useAuth();
   const navigate = useNavigate();
 
@@ -110,45 +98,7 @@ export default function Nav() {
       </Box>
 
       {/* LINK DRAWER */}
-      <Drawer
-        isOpen={isOpen}
-        placement="right"
-        onClose={onClose}
-        finalFocusRef={btnRef}
-      >
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
-          <DrawerHeader>Create link</DrawerHeader>
-
-          <DrawerBody>
-            <VStack align="start">
-              <FormLabel>Title</FormLabel>
-              <Input placeholder="Enter title" />
-              <FormLabel>Long url</FormLabel>
-              <Input placeholder="Enter long url" />
-              <FormLabel>Short url</FormLabel>
-              <InputGroup>
-                <InputLeftAddon children="shaw.ty/" />
-                <Input
-                  placeholder="Enter short url"
-                  value={newUrl}
-                  onChange={(e) => setNewUrl(e.target.value)}
-                />
-              </InputGroup>
-            </VStack>
-          </DrawerBody>
-
-          <DrawerFooter>
-            <Button variant="outline" mr={3} onClick={onClose}>
-              Cancel
-            </Button>
-            <Button colorScheme="telegram" onClick={onClose}>
-              Create
-            </Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+      <CreateLinkDrawer isOpen={isOpen} onClose={onClose} btnRef={btnRef} />
     </>
   );
 }
