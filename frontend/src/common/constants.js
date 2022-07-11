@@ -1,6 +1,6 @@
 export const paths = {
-  LOCAL_BASE_URL: "http://localhost:8080",
-  BASE_URL: "http://localhost:8080",
+  LOCAL_BASE_URL: "http://localhost:8000",
+  BASE_URL: "http://localhost:8000",
   USERS: "/users",
   LINKS: "/links",
   PLANS: "/plans",
