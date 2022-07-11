@@ -85,54 +85,54 @@ async def get_all_shortened_urls(
     return list(link_collection.find())
 
 @router.delete(
-        "/{short_key}", 
+        "/{short_url}", 
         status_code = status.HTTP_200_OK
     )
-async def delete_link_by_short_key(
-        short_key: str,
+async def delete_link_by_short_url(
+        short_url: str,
         current_user: User = Depends(get_current_user)
     ):
-    if not current_user["is_admin"] or get_short_link_owner(short_key) != current_user:
+    if not current_user["is_admin"] or get_short_link_owner(short_url) != current_user:
         raise HTTPException(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",
         )
-    link_collection.delete_one({"short_url": short_key})
+    link_collection.delete_one({"short_url": short_url})
     return {}
 
 @router.get(
-        "/{short_key}", 
+        "/{short_url}", 
         response_model = URLBase, 
         status_code = status.HTTP_200_OK
     )
-async def get_link_by_short_key(
-        short_key: str,
+async def get_link_by_short_url(
+        short_url: str,
         current_user: User = Depends(get_current_user)
     ):
-    print(get_short_link_owner(short_key)["username"])
+    print(get_short_link_owner(short_url)["username"])
     print(current_user["username"])
-    if not current_user["is_admin"] and get_short_link_owner(short_key)["username"] != current_user["username"]:
+    if not current_user["is_admin"] and get_short_link_owner(short_url)["username"] != current_user["username"]:
         raise HTTPException(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",
         )
-    return URLBase(target_url = redis_db.get(short_key))
+    return URLBase(target_url = redis_db.get(short_url))
 
 @router.get(
-        "/{short_key}/metadata", 
+        "/{short_url}/metadata", 
         response_model = URLInfo, 
         status_code = status.HTTP_200_OK
     )
-async def get_link_metadata_by_short_key(
-        short_key: str,
+async def get_link_metadata_by_short_url(
+        short_url: str,
         current_user: User = Depends(get_current_user)
     ):
-    if not current_user["is_admin"] and get_short_link_owner(short_key)["username"] != current_user["username"]:
+    if not current_user["is_admin"] and get_short_link_owner(short_url)["username"] != current_user["username"]:
         raise HTTPException(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",
         )
-    return link_collection.find_one({"short_url": short_key})
+    return link_collection.find_one({"short_url": short_url})
 
 
 class UpdateURL(BaseModel):
@@ -140,27 +140,27 @@ class UpdateURL(BaseModel):
 
 #TODO
 @router.put(
-        "/{short_key}", 
+        "/{short_url}", 
         response_model = URLInfo, 
         status_code = status.HTTP_200_OK
     )
-async def modify_link_by_short_key(
-        short_key: str, 
-        custom_short_key: UpdateURL,
+async def modify_link_by_short_url(
+        short_url: str, 
+        custom_short_url: UpdateURL,
         current_user: User = Depends(get_current_user),
     ):
-    if not current_user["is_admin"] and get_short_link_owner(short_key)["username"] != current_user["username"]:
+    if not current_user["is_admin"] and get_short_link_owner(short_url)["username"] != current_user["username"]:
         raise HTTPException(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",
         )
-    if redis_db.exists(custom_short_key.short_url):
+    if redis_db.exists(custom_short_url.short_url):
         raise HTTPException(
             status_code = status.HTTP_400_BAD_REQUEST,
             detail = "The provided short URL is already in use",
         )
-    redis_db.set(custom_short_key.short_url, redis_db.get(short_key))
-    redis_db.expire(custom_short_key.short_url, redis_db.ttl(short_key))
-    redis_db.delete(short_key)
-    link_collection.update_one({"short_url": short_key}, {"$set": {"short_url": custom_short_key.short_url}})
-    return link_collection.find_one({"short_url": custom_short_key.short_url})
+    redis_db.set(custom_short_url.short_url, redis_db.get(short_url))
+    redis_db.expire(custom_short_url.short_url, redis_db.ttl(short_url))
+    redis_db.delete(short_url)
+    link_collection.update_one({"short_url": short_url}, {"$set": {"short_url": custom_short_url.short_url}})
+    return link_collection.find_one({"short_url": custom_short_url.short_url})
