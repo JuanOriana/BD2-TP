@@ -19,6 +19,7 @@ import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
+import { tokenService } from "../services";
 
 export default function SignIn() {
   const { signin } = useAuth();
@@ -90,20 +91,23 @@ export default function SignIn() {
                 _hover={{
                   bg: "blue.500",
                 }}
-                onClick={() =>
-                  signin(
-                    {
-                      username,
-                      password,
-                      isAdmin: false,
-                      email: "hola@mail.com",
-                    },
-                    () => {
-                      console.log(from);
-                      navigate(from, { replace: true });
-                    }
-                  )
-                }
+                onClick={() => {
+                  tokenService
+                    .getToken(username, password)
+                    .then((r) => console.log(r));
+                  // signin(
+                  //   {
+                  //     username,
+                  //     password,
+                  //     isAdmin: false,
+                  //     email: "hola@mail.com",
+                  //   },
+                  //   () => {
+                  //     console.log(from);
+                  //     navigate(from, { replace: true });
+                  //   }
+                  // );
+                }}
               >
                 Sign in
               </Button>

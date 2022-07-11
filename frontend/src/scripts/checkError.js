@@ -1,4 +1,4 @@
-function checkError(response) {
+export function checkError(response) {
   if (
     response.status >= 200 &&
     response.status <= 299 &&

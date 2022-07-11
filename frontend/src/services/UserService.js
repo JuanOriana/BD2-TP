@@ -9,25 +9,25 @@ export class UserService {
   }
 
   async getUserById(userId) {
-    return resultFetch(this.basePath + "/" + userId, {
+    return resultFetch(basePath + "/" + userId, {
       method: "GET",
     });
   }
 
   async getCurrentUser() {
-    return resultFetch(this.basePath + "/me", {
+    return resultFetch(basePath + "/me", {
       method: "GET",
     });
   }
 
   async getUserLinks(userId, page, pageSize) {
-    return resultFetch(this.basePath + "/" + userId + "/links", {
+    return resultFetch(basePath + "/" + userId + "/links", {
       method: "GET",
     });
   }
 
   async getUserPlan(userId) {
-    return resultFetch(this.basePath + "/" + userId + "/plan", {
+    return resultFetch(basePath + "/" + userId + "/plan", {
       method: "GET",
     });
   }
@@ -45,7 +45,7 @@ export class UserService {
     //   );
     // }
 
-    return resultFetch(this.basePath, {
+    return resultFetch(basePath, {
       method: "POST",
       headers: {
         "Content-Type": APPLICATION_V1_JSON_TYPE,
@@ -55,7 +55,7 @@ export class UserService {
   }
 
   async deleteUserById(userId) {
-    return resultFetch(this.basePath + "/" + userId, {
+    return resultFetch(basePath + "/" + userId, {
       method: "DELETE",
     });
   }

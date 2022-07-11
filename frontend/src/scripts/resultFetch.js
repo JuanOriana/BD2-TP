@@ -1,5 +1,4 @@
-import { Result } from "../types";
-import { authedFetch } from "./authedFetch";
+import Result from "../types/Result";
 import { checkError } from "./checkError";
 
 export async function resultFetch(url, options) {
@@ -12,7 +11,7 @@ export async function resultFetch(url, options) {
       newOptions.headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const response = await authedFetch(url, newOptions);
+    const response = await fetch(url, newOptions);
     parsedResponse = await checkError(response);
 
     return Result.ok(parsedResponse);
