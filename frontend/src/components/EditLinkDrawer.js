@@ -20,7 +20,7 @@ import {
 import { useForm } from "react-hook-form";
 import { linkService } from "../services";
 
-const EditLinkDrawer = ({ isOpen, onClose, btnRef, link }) => {
+const EditLinkDrawer = ({ isOpen, onClose, btnRef, link, onEdit }) => {
   const {
     register,
     handleSubmit,
@@ -30,7 +30,10 @@ const EditLinkDrawer = ({ isOpen, onClose, btnRef, link }) => {
   const onSubmit = (data) => {
     linkService
       .editLink(link.short_url, data.title, data.shortUrl)
-      .then(() => onClose());
+      .then((r) => {
+        onEdit(link.short_url, r.getData());
+        onClose();
+      });
   };
 
   return (

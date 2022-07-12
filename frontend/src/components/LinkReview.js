@@ -11,12 +11,27 @@ import {
   StatArrow,
   useColorModeValue,
   useToast,
+  useDisclosure,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  Button,
 } from "@chakra-ui/react";
 
 import { paths } from "../common/constants";
-import { EditIcon, LinkIcon } from "@chakra-ui/icons";
+import { EditIcon, LinkIcon, DeleteIcon } from "@chakra-ui/icons";
 import { FiClipboard } from "react-icons/fi";
-const LinkReview = ({ link, onOpen, btnRef }) => {
+import { linkService } from "../services";
+const LinkReview = ({ link, onOpen, btnRef, onDelete }) => {
+  const {
+    isOpen: isOpenModal,
+    onOpen: onOpenModal,
+    onClose: onCloseModal,
+  } = useDisclosure();
   const toast = useToast();
   return (
     <>
@@ -31,6 +46,7 @@ const LinkReview = ({ link, onOpen, btnRef }) => {
             onClick={onOpen}
             ref={btnRef}
           />
+          <DeleteIcon ml={3} mt={1} cursor="pointer" onClick={onOpenModal} />
         </Flex>
         <Text mb={1} ml={6} opacity={0.8}>
           {link.date} by{" "}
@@ -93,6 +109,29 @@ const LinkReview = ({ link, onOpen, btnRef }) => {
           </StatHelpText>
         </Stat>
       </>
+      <Modal isOpen={isOpenModal} onClose={onCloseModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Are you sure you want to delete this link?</ModalHeader>
+          <ModalCloseButton />
+
+          <ModalFooter>
+            <Button colorScheme="red" mr={3} onClick={onCloseModal}>
+              No
+            </Button>
+            <Button
+              colorScheme="blue"
+              onClick={() => {
+                linkService.deleteLinkByKey(link.short_url);
+                onCloseModal();
+                onDelete(link.short_url);
+              }}
+            >
+              Yes
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 };
