@@ -114,6 +114,8 @@ async def get_link_by_short_url(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",
         )
+    #increase click count
+    link_collection.update_one({"short_url": short_url}, {"$inc": {"clicks": 1}})
     return URLBase(target_url = redis_db.get(short_url))
 
 @router.get(
