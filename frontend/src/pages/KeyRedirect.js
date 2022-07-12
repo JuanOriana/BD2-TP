@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { handleService } from "../scripts/handleService";
 import { linkService } from "../services";
 
-const KeyRedirect = (props) => {
+const KeyRedirect = () => {
   const { key } = useParams();
   const navigate = useNavigate();
   handleService(

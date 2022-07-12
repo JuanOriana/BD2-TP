@@ -28,7 +28,9 @@ const EditLinkDrawer = ({ isOpen, onClose, btnRef, link }) => {
   } = useForm();
 
   const onSubmit = (data) => {
-    //TODO: EVALUATE FAILED SHORT URL
+    linkService
+      .editLink(link.short_url, data.title, data.shortUrl)
+      .then(() => onClose());
   };
 
   return (
@@ -48,6 +50,7 @@ const EditLinkDrawer = ({ isOpen, onClose, btnRef, link }) => {
               <FormControl id="title" isInvalid={errors.title}>
                 <FormLabel htmlFor="title">Title</FormLabel>
                 <Input
+                  defaultValue={link.title}
                   isRequired
                   placeholder="Enter title"
                   id="title"
