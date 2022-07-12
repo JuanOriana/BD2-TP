@@ -16,6 +16,8 @@ import { AuthProvider } from "./contexts/AuthContext";
 import RequireAuth from "./components/RequireAuth";
 import Users from "./pages/Admin/Users";
 import Links from "./pages/Admin/Links";
+import Nav from "./components/Nav/Nav";
+import Error from "./pages/Error";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -44,11 +46,21 @@ root.render(
             <Route path="signup" element={<SignUp />} />
             <Route path="link/:key" element={<KeyRedirect />} />
             <Route
+              path="error"
+              element={
+                <>
+                  <Nav />
+                  <Error />
+                </>
+              }
+            />
+            <Route
               path="*"
               element={
-                <Layout>
+                <>
+                  <Nav />
                   <Error404 />
-                </Layout>
+                </>
               }
             />
           </Routes>
