@@ -5,6 +5,8 @@ import {
   useColorModeValue,
   useDisclosure,
   Text,
+  Button,
+  Center,
 } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
 import LinkCard from "../components/LinkCard";
@@ -72,9 +74,14 @@ function Home() {
             <Heading fontSize="3xl" mb={2}>
               Links
             </Heading>
-            <Text>
-              Links used: {links.length}/{user.plan.max_url_count}
-            </Text>
+            <Flex alignItems="center">
+              {/* <Button colorScheme={"telegram"} mr={8}>
+                CREATE LINK
+              </Button> */}
+              <Text>
+                Links used: {links.length}/{user.plan.max_url_count}
+              </Text>
+            </Flex>
           </Flex>
 
           <Divider />
@@ -104,6 +111,13 @@ function Home() {
               )}
             </Flex>
             <Flex flexDirection="column" width="100%" p={3}>
+              {links.length == 0 && (
+                <Center mt={2}>
+                  <Heading>
+                    Click the button above to create a new shortened link :)
+                  </Heading>
+                </Center>
+              )}
               {links.length > 0 && (
                 <LinkReview
                   link={links[selected]}
