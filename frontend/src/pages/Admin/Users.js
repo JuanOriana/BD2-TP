@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   Thead,
@@ -11,15 +11,25 @@ import {
   Heading,
 } from "@chakra-ui/react";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowBackIcon } from "@chakra-ui/icons";
+import { handleService } from "../../scripts/handleService";
+import { userService } from "../../services";
 
-const users = [
-  { username: "juan", email: "mail@mail.com", plan: "simple", isAdmin: false },
-  { username: "mati", email: "mail@mail.com", plan: "simple", isAdmin: true },
-  { username: "pau", email: "mail@mail.com", plan: "extended", isAdmin: false },
-];
 const Users = () => {
+  const [isLoading, setLoading] = useState(true);
+  const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
+  useEffect(() => {
+    setLoading(true);
+    handleService(
+      userService.getUsers(),
+      navigate,
+      (foundUsers) => setUsers(foundUsers),
+      () => setLoading(false)
+    );
+  }, []);
+
   return (
     <Flex direction="column" p={10}>
       <Flex alignItems="center">

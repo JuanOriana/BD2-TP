@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   Thead,
@@ -12,13 +12,23 @@ import {
 } from "@chakra-ui/react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
+import { linkService } from "../../services";
+import { useNavigate } from "react-router-dom";
+import { handleService } from "../../scripts/handleService";
 
-const links = [
-  { title: "This is google", longUrl: "google.com", key: "2130D0" },
-  { title: "This is old", longUrl: "yahoo.com", key: "M1AlD0" },
-  { title: "This is scary", longUrl: "facebook.com", key: "DXX922" },
-];
 const Links = () => {
+  const [isLoading, setLoading] = useState(true);
+  const [links, setLinks] = useState([]);
+  const navigate = useNavigate();
+  useEffect(() => {
+    setLoading(true);
+    handleService(
+      linkService.getLinks(),
+      navigate,
+      (foundLinks) => setLinks(foundLinks),
+      () => setLoading(false)
+    );
+  }, []);
   return (
     <Flex direction="column" p={10}>
       <Flex alignItems="center">

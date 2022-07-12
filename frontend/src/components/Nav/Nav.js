@@ -80,9 +80,11 @@ export default function Nav() {
                     <Link to="/">
                       <MenuItem>Your Links</MenuItem>
                     </Link>
-                    <Link to="/admin">
-                      <MenuItem>Administrator Panel</MenuItem>
-                    </Link>
+                    {user.is_admin && (
+                      <Link to="/admin">
+                        <MenuItem>Administrator Panel</MenuItem>
+                      </Link>
+                    )}
                     <MenuItem
                       color={"red.700"}
                       fontWeight="bold"
