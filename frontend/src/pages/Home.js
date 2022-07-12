@@ -37,6 +37,28 @@ function Home() {
     }
   }, [user]);
 
+  const removeLinkFromList = (shortUrl) => {
+    let newLinks = [...links];
+    newLinks = newLinks.filter((link) => link.short_url !== shortUrl);
+    setLinks(newLinks);
+  };
+
+  const addLinkFromList = (link) => {
+    let newLinks = [...links];
+    newLinks.unshift(link);
+    setLinks(newLinks);
+  };
+
+  const editLinkFromList = (oldShortUrl, link) => {
+    let newLinks = [...links];
+    const insertIdx = newLinks.findIndex(
+      (link) => link.short_url === oldShortUrl
+    );
+    console.log(oldShortUrl);
+    newLinks[insertIdx] = link;
+    setLinks(newLinks);
+  };
+
   return (
     <>
       <Flex height={"100vh"} flexDirection="column">
@@ -61,8 +83,6 @@ function Home() {
                     shortUrl={link.short_url}
                     selected={selected === idx}
                     onClick={() => {
-                      const links_cpy = [...links];
-                      links_cpy[selected].clicks += 1;
                       setSelected(idx);
                     }}
                   />
@@ -78,6 +98,7 @@ function Home() {
                   link={links[selected]}
                   onOpen={onOpen}
                   btnRef={btnRef}
+                  onDelete={removeLinkFromList}
                 />
               )}
             </Flex>
@@ -91,6 +112,7 @@ function Home() {
           onClose={onClose}
           btnRef={btnRef}
           link={links[selected]}
+          onEdit={editLinkFromList}
         />
       )}
     </>

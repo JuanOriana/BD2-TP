@@ -42,13 +42,13 @@ export class LinkService {
     });
   }
 
-  async editLink(title, shortUrl) {
+  async editLink(originalShortUrl, title, shortUrl) {
     const newLink = JSON.stringify({
       title: title,
       short_url: shortUrl,
     });
 
-    return resultFetch(basePath, {
+    return resultFetch(basePath + "/" + originalShortUrl, {
       method: "PUT",
       headers: {
         "Content-Type": APPLICATION_V1_JSON_TYPE,

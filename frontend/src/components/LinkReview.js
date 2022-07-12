@@ -8,14 +8,28 @@ import {
   StatLabel,
   StatNumber,
   StatHelpText,
-  StatArrow,
   useColorModeValue,
   useToast,
+  useDisclosure,
+  Modal,
+  ModalFooter,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  Button,
 } from "@chakra-ui/react";
 
-import { EditIcon, LinkIcon } from "@chakra-ui/icons";
+import { paths } from "../common/constants";
+import { EditIcon, LinkIcon, DeleteIcon } from "@chakra-ui/icons";
 import { FiClipboard } from "react-icons/fi";
-const LinkReview = ({ link, onOpen, btnRef }) => {
+import { linkService } from "../services";
+const LinkReview = ({ link, onOpen, btnRef, onDelete }) => {
+  const {
+    isOpen: isOpenModal,
+    onOpen: onOpenModal,
+    onClose: onCloseModal,
+  } = useDisclosure();
   const toast = useToast();
   return (
     <>
@@ -30,6 +44,7 @@ const LinkReview = ({ link, onOpen, btnRef }) => {
             onClick={onOpen}
             ref={btnRef}
           />
+          <DeleteIcon ml={3} mt={1} cursor="pointer" onClick={onOpenModal} />
         </Flex>
         <Text mb={1} ml={6} opacity={0.8}>
           {link.date} by{" "}
@@ -51,12 +66,15 @@ const LinkReview = ({ link, onOpen, btnRef }) => {
           <Flex alignItems="center">
             <LinkIcon mr={3} />
             <Text fontSize="xl" fontWeight={700}>
-              bit.ly/{link.short_url}
+              {paths.WEB_URL + "/link/"}
+              {link.short_url}
             </Text>
           </Flex>
           <Link
             onClick={() => {
-              navigator.clipboard.writeText("bit.ly/" + link.short_url);
+              navigator.clipboard.writeText(
+                paths.WEB_URL + "/link/" + link.short_url
+              );
               toast({
                 title: "Copied link to clipboard.",
                 status: "info",
@@ -83,12 +101,33 @@ const LinkReview = ({ link, onOpen, btnRef }) => {
           rounded={10}
         >
           <StatLabel fontSize="xl">Clicks</StatLabel>
-          <StatNumber fontSize="3xl">{link.clicks}</StatNumber>
-          <StatHelpText fontSize="l">
-            <StatArrow type="increase" /> 9.06%
-          </StatHelpText>
+          <StatNumber fontSize="2xl">{link.clicks}</StatNumber>
+          <StatHelpText fontSize="sm">~ last 30 days</StatHelpText>
         </Stat>
       </>
+      <Modal isOpen={isOpenModal} onClose={onCloseModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Are you sure you want to delete this link?</ModalHeader>
+          <ModalCloseButton />
+
+          <ModalFooter>
+            <Button colorScheme="red" mr={3} onClick={onCloseModal}>
+              No
+            </Button>
+            <Button
+              colorScheme="blue"
+              onClick={() => {
+                linkService.deleteLinkByKey(link.short_url);
+                onCloseModal();
+                onDelete(link.short_url);
+              }}
+            >
+              Yes
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

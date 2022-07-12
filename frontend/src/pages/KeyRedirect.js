@@ -1,12 +1,17 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { handleService } from "../scripts/handleService";
+import { linkService } from "../services";
 
-const KeyRedirect = (props) => {
+const KeyRedirect = () => {
   const { key } = useParams();
-  function getLongUrl(key) {
-    return "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-  }
-  window.location.replace(getLongUrl(key));
+  const navigate = useNavigate();
+  handleService(
+    linkService.getLinkByKey(key),
+    navigate,
+    (r) => window.location.replace(r.target_url),
+    () => {}
+  );
   return <></>;
 };
 

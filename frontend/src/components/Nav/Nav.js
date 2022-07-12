@@ -80,9 +80,6 @@ export default function Nav() {
                     <Link to="/admin">
                       <MenuItem>Administrator Panel</MenuItem>
                     </Link>
-                    <Link to="/edit-user">
-                      <MenuItem>Edit Profile</MenuItem>
-                    </Link>
                     <MenuItem
                       color={"red.700"}
                       fontWeight="bold"
