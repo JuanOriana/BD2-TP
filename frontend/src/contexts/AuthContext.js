@@ -11,7 +11,6 @@ export function AuthProvider({ children }) {
       setUser(newUser);
       if (!localStorage.getItem("user"))
         localStorage.setItem("user", JSON.stringify(newUser));
-      localStorage.setItem("token", newUser.token);
       localStorage.setItem("isAdmin", newUser.admin ? "true" : "false");
       callback();
     });

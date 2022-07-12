@@ -1,4 +1,4 @@
-import { APPLICATION_V1_JSON_TYPE, paths } from "../common/constants";
+import { paths } from "../common/constants";
 
 import { resultFetch } from "../scripts/resultFetch";
 const basePath = paths.BASE_URL + paths.PLANS;

@@ -19,7 +19,7 @@ import { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
-import { tokenService } from "../services";
+import { tokenService, userService } from "../services";
 
 export default function SignIn() {
   const { signin } = useAuth();
@@ -92,21 +92,18 @@ export default function SignIn() {
                   bg: "blue.500",
                 }}
                 onClick={() => {
-                  tokenService
-                    .getToken(username, password)
-                    .then((r) => console.log(r));
-                  // signin(
-                  //   {
-                  //     username,
-                  //     password,
-                  //     isAdmin: false,
-                  //     email: "hola@mail.com",
-                  //   },
-                  //   () => {
-                  //     console.log(from);
-                  //     navigate(from, { replace: true });
-                  //   }
-                  // );
+                  setInvalidCred(false);
+                  tokenService.getToken(username, password).then((r) => {
+                    if (r.hasFailed()) {
+                      setInvalidCred(true);
+                    } else {
+                      userService.getCurrentUser().then((user) =>
+                        signin(user.getData(), () => {
+                          navigate(from, { replace: true });
+                        })
+                      );
+                    }
+                  });
                 }}
               >
                 Sign in
