@@ -13,21 +13,48 @@ import {
   Text,
   useColorModeValue,
   Link,
+  Alert,
+  AlertIcon,
+  AlertTitle,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { userService, tokenService } from "../services";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
+  const [invalidCred, setInvalidCred] = useState(false);
+  const { signin } = useAuth();
+  let navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm();
 
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = (data) => {
+    setInvalidCred(false);
+    userService.newUser(data.username, data.email, data.password).then((r) => {
+      if (r.hasFailed()) setInvalidCred(true);
+      else {
+        tokenService.getToken(data.username, data.password).then((r) => {
+          if (r.hasFailed()) {
+            setInvalidCred(true);
+          } else {
+            userService.getCurrentUser().then((user) =>
+              signin(user.getData(), () => {
+                navigate("/", { replace: true });
+              })
+            );
+          }
+        });
+      }
+    });
+  };
 
   return (
     <Flex
@@ -110,6 +137,12 @@ export default function SignUp() {
                   {errors.password && errors.password.message}
                 </FormErrorMessage>
               </FormControl>
+              {invalidCred && (
+                <Alert status="error">
+                  <AlertIcon />
+                  <AlertTitle>Your credentials are invalid</AlertTitle>
+                </Alert>
+              )}
               <Stack spacing={10} pt={2}>
                 <Button
                   loadingText="Submitting"
