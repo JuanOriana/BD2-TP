@@ -1,5 +1,6 @@
 import { useColorModeValue, Flex, Text } from "@chakra-ui/react";
 import React from "react";
+import { paths } from "../common/constants";
 
 const LinkCard = ({ date, title, shortUrl, selected, onClick }) => {
   const selectedColor = useColorModeValue("white", "gray.600");
@@ -22,7 +23,8 @@ const LinkCard = ({ date, title, shortUrl, selected, onClick }) => {
       <Text color={useColorModeValue("gray.500", "gray.300")}>{date}</Text>
       <Text>{title}</Text>
       <Text color="telegram.500">
-        bit.ly/<Text as="b">{shortUrl}</Text>
+        {paths.WEB_URL + "/link/"}
+        <Text as="b">{shortUrl}</Text>
       </Text>
     </Flex>
   );

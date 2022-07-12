@@ -13,6 +13,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 
+import { paths } from "../common/constants";
 import { EditIcon, LinkIcon } from "@chakra-ui/icons";
 import { FiClipboard } from "react-icons/fi";
 const LinkReview = ({ link, onOpen, btnRef }) => {
@@ -51,12 +52,15 @@ const LinkReview = ({ link, onOpen, btnRef }) => {
           <Flex alignItems="center">
             <LinkIcon mr={3} />
             <Text fontSize="xl" fontWeight={700}>
-              bit.ly/{link.short_url}
+              {paths.WEB_URL + "/link/"}
+              {link.short_url}
             </Text>
           </Flex>
           <Link
             onClick={() => {
-              navigator.clipboard.writeText("bit.ly/" + link.short_url);
+              navigator.clipboard.writeText(
+                paths.WEB_URL + "/link/" + link.short_url
+              );
               toast({
                 title: "Copied link to clipboard.",
                 status: "info",
