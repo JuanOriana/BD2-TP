@@ -15,4 +15,7 @@ class URLInfo(URL):
     creation_date: date
     author: User
     
+class UpdateURL(BaseModel):
+    short_url: str
+    title: Union[str, None] = None
 

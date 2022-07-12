@@ -109,8 +109,6 @@ async def get_link_by_short_url(
         short_url: str,
         current_user: User = Depends(get_current_user)
     ):
-    print(get_short_link_owner(short_url)["username"])
-    print(current_user["username"])
     if not current_user["is_admin"] and get_short_link_owner(short_url)["username"] != current_user["username"]:
         raise HTTPException(
             status_code = status.HTTP_403_FORBIDDEN,
@@ -134,10 +132,6 @@ async def get_link_metadata_by_short_url(
         )
     return link_collection.find_one({"short_url": short_url})
 
-
-class UpdateURL(BaseModel):
-    short_url: str
-
 #TODO
 @router.put(
         "/{short_url}", 
@@ -146,7 +140,7 @@ class UpdateURL(BaseModel):
     )
 async def modify_link_by_short_url(
         short_url: str, 
-        custom_short_url: UpdateURL,
+        update_body: UpdateURL,
         current_user: User = Depends(get_current_user),
     ):
     if not current_user["is_admin"] and get_short_link_owner(short_url)["username"] != current_user["username"]:
@@ -154,13 +148,13 @@ async def modify_link_by_short_url(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",
         )
-    if redis_db.exists(custom_short_url.short_url):
+    if redis_db.exists(update_body.short_url):
         raise HTTPException(
             status_code = status.HTTP_400_BAD_REQUEST,
             detail = "The provided short URL is already in use",
         )
-    redis_db.set(custom_short_url.short_url, redis_db.get(short_url))
-    redis_db.expire(custom_short_url.short_url, redis_db.ttl(short_url))
+    redis_db.set(update_body.short_url, redis_db.get(short_url))
+    redis_db.expire(update_body.short_url, redis_db.ttl(short_url))
     redis_db.delete(short_url)
-    link_collection.update_one({"short_url": short_url}, {"$set": {"short_url": custom_short_url.short_url}})
-    return link_collection.find_one({"short_url": custom_short_url.short_url})
+    link_collection.update_one({"short_url": short_url}, {"$set": {"short_url": update_body.short_url, "title": update_body.title}})
+    return link_collection.find_one({"short_url": update_body.short_url})
