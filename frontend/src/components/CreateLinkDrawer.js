@@ -26,8 +26,7 @@ const CreateLinkDrawer = ({ isOpen, onClose, btnRef }) => {
   } = useForm();
 
   const onSubmit = (data) => {
-    linkService.newLink(data.targetUrl, data.title).then((r) => {
-      console.log(r);
+    linkService.newLink(data.targetUrl, data.title).then(() => {
       onClose();
     });
   };

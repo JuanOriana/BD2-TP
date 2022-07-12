@@ -27,7 +27,7 @@ export class LinkService {
   }
 
   async newLink(targetUrl, title, shortUrl) {
-    const newUser = JSON.stringify({
+    const newLink = JSON.stringify({
       target_url: targetUrl,
       title: title,
       short_url: shortUrl,
@@ -38,7 +38,22 @@ export class LinkService {
       headers: {
         "Content-Type": APPLICATION_V1_JSON_TYPE,
       },
-      body: newUser,
+      body: newLink,
+    });
+  }
+
+  async editLink(title, shortUrl) {
+    const newLink = JSON.stringify({
+      title: title,
+      short_url: shortUrl,
+    });
+
+    return resultFetch(basePath, {
+      method: "PUT",
+      headers: {
+        "Content-Type": APPLICATION_V1_JSON_TYPE,
+      },
+      body: newLink,
     });
   }
 
