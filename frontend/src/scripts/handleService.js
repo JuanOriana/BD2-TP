@@ -1,8 +1,5 @@
-
-
-
 export function handleService(
-  promise
+  promise,
   navigate,
   setterFunction,
   cleanerFunction
