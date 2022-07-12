@@ -17,7 +17,6 @@ import { EditIcon, LinkIcon } from "@chakra-ui/icons";
 import { FiClipboard } from "react-icons/fi";
 const LinkReview = ({ link, onOpen, btnRef }) => {
   const toast = useToast();
-
   return (
     <>
       {" "}
@@ -35,7 +34,7 @@ const LinkReview = ({ link, onOpen, btnRef }) => {
         <Text mb={1} ml={6} opacity={0.8}>
           {link.date} by{" "}
           <Link color={useColorModeValue("telegram.500", "telegram.300")}>
-            Mati Pavan
+            {link.author.username}
           </Link>
         </Text>
         <Flex
@@ -52,12 +51,12 @@ const LinkReview = ({ link, onOpen, btnRef }) => {
           <Flex alignItems="center">
             <LinkIcon mr={3} />
             <Text fontSize="xl" fontWeight={700}>
-              bit.ly/{link.shortUrl}
+              bit.ly/{link.short_url}
             </Text>
           </Flex>
           <Link
             onClick={() => {
-              navigator.clipboard.writeText("bit.ly/" + link.shortUrl);
+              navigator.clipboard.writeText("bit.ly/" + link.short_url);
               toast({
                 title: "Copied link to clipboard.",
                 status: "info",
@@ -73,6 +72,7 @@ const LinkReview = ({ link, onOpen, btnRef }) => {
             </Flex>
           </Link>
         </Flex>
+        <Text ml={3}>Goes to: {link.target_url}</Text>
         <Stat
           alignSelf={"end"}
           mr={30}

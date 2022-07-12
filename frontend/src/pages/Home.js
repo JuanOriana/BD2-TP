@@ -4,6 +4,7 @@ import {
   Divider,
   useColorModeValue,
   useDisclosure,
+  Text,
 } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
 import LinkCard from "../components/LinkCard";
@@ -25,10 +26,10 @@ function Home() {
 
   useEffect(() => {
     setLoading(true);
+    setSelected(0);
     if (user) {
-      console.log(user);
       handleService(
-        userService.getUserLinks(user.user_id),
+        userService.getUserLinks(user.username),
         navigate,
         (userLinks) => setLinks(userLinks),
         () => setLoading(false)
@@ -57,7 +58,7 @@ function Home() {
                   <LinkCard
                     date={link.date}
                     title={link.title}
-                    shortUrl={link.shortUrl}
+                    shortUrl={link.short_url}
                     selected={selected === idx}
                     onClick={() => {
                       const links_cpy = [...links];
@@ -67,6 +68,9 @@ function Home() {
                   />
                 </>
               ))}
+              {links.length == 0 && (
+                <Text p={2}>You have no links created, yet</Text>
+              )}
             </Flex>
             <Flex flexDirection="column" width="100%" p={3}>
               {links.length > 0 && (
