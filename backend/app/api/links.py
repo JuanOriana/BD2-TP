@@ -92,11 +92,12 @@ async def delete_link_by_short_url(
         short_url: str,
         current_user: User = Depends(get_current_user)
     ):
-    if not current_user["is_admin"] or get_short_link_owner(short_url) != current_user:
+    if not current_user["is_admin"] and get_short_link_owner(short_url)["username"] != current_user["username"]:
         raise HTTPException(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",
         )
+    redis_db.delete(short_url)
     link_collection.delete_one({"short_url": short_url})
     return {}
 
@@ -150,7 +151,7 @@ async def modify_link_by_short_url(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",
         )
-    if redis_db.exists(update_body.short_url):
+    if redis_db.exists(update_body.short_url) and update_body.short_url != short_url:
         raise HTTPException(
             status_code = status.HTTP_400_BAD_REQUEST,
             detail = "The provided short URL is already in use",
