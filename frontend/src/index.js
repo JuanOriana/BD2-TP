@@ -5,7 +5,6 @@ import HomeFork from "./pages/HomeFork";
 import { ChakraProvider } from "@chakra-ui/react";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
-import EditUser from "./pages/EditUser";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import KeyRedirect from "./pages/KeyRedirect";
 import AdminPanel from "./pages/Admin/AdminPanel";
@@ -36,7 +35,6 @@ root.render(
             >
               <Route index element={<HomeFork />} />
               <Route path="home" element={<HomeFork />} />
-              <Route path="edit-user" element={<EditUser />} />
               <Route path="admin" element={<AdminPanel />} />
               <Route path="admin/plans" element={<Plans />} />
               <Route path="admin/users" element={<Users />} />

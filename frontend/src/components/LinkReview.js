@@ -8,12 +8,10 @@ import {
   StatLabel,
   StatNumber,
   StatHelpText,
-  StatArrow,
   useColorModeValue,
   useToast,
   useDisclosure,
   Modal,
-  ModalBody,
   ModalFooter,
   ModalOverlay,
   ModalContent,
@@ -103,10 +101,8 @@ const LinkReview = ({ link, onOpen, btnRef, onDelete }) => {
           rounded={10}
         >
           <StatLabel fontSize="xl">Clicks</StatLabel>
-          <StatNumber fontSize="3xl">{link.clicks}</StatNumber>
-          <StatHelpText fontSize="l">
-            <StatArrow type="increase" /> 9.06%
-          </StatHelpText>
+          <StatNumber fontSize="2xl">{link.clicks}</StatNumber>
+          <StatHelpText fontSize="sm">~ last 30 days</StatHelpText>
         </Stat>
       </>
       <Modal isOpen={isOpenModal} onClose={onCloseModal}>
