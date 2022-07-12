@@ -73,6 +73,9 @@ export default function Nav() {
                       <p>{user.username}</p>
                     </Center>
                     <br />
+                    <Center mt={-5}>
+                      <p>Plan: {user.plan.name}</p>
+                    </Center>
                     <MenuDivider />
                     <Link to="/">
                       <MenuItem>Your Links</MenuItem>

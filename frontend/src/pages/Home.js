@@ -54,18 +54,29 @@ function Home() {
     const insertIdx = newLinks.findIndex(
       (link) => link.short_url === oldShortUrl
     );
-    console.log(oldShortUrl);
     newLinks[insertIdx] = link;
     setLinks(newLinks);
   };
-
   return (
     <>
       <Flex height={"100vh"} flexDirection="column">
         <Flex flexDirection="column" flex={1}>
-          <Heading fontSize="3xl" ml={8} mt={4} mb={2}>
-            Links
-          </Heading>
+          <Flex
+            mt={4}
+            mb={2}
+            px={8}
+            alignItems="center"
+            justifyContent="space-between"
+            width="100%"
+          >
+            <Heading fontSize="3xl" mb={2}>
+              Links
+            </Heading>
+            <Text>
+              Links used: {links.length}/{user.plan.max_url_count}
+            </Text>
+          </Flex>
+
           <Divider />
           <Flex width="100%" height="100%">
             <Flex

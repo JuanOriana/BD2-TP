@@ -46,8 +46,8 @@ const LinkReview = ({ link, onOpen, btnRef, onDelete }) => {
           />
           <DeleteIcon ml={3} mt={1} cursor="pointer" onClick={onOpenModal} />
         </Flex>
-        <Text mb={1} ml={6} opacity={0.8}>
-          {link.date} by{" "}
+        <Text mb={1} ml={3} opacity={0.8}>
+          {link.creation_date} by{" "}
           <Link color={useColorModeValue("telegram.500", "telegram.300")}>
             {link.author.username}
           </Link>
