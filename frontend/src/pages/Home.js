@@ -61,8 +61,6 @@ function Home() {
                     shortUrl={link.short_url}
                     selected={selected === idx}
                     onClick={() => {
-                      const links_cpy = [...links];
-                      links_cpy[selected].clicks += 1;
                       setSelected(idx);
                     }}
                   />
