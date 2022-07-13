@@ -50,8 +50,8 @@ const Links = () => {
             {links.map((link) => (
               <Tr>
                 <Td>{link.title}</Td>
-                <Td>{link.longUrl}</Td>
-                <Td>{link.key}</Td>
+                <Td>{link.target_url}</Td>
+                <Td>{link.short_url}</Td>
               </Tr>
             ))}
           </Tbody>

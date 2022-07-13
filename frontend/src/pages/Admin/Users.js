@@ -53,8 +53,8 @@ const Users = () => {
               <Tr>
                 <Td>{user.username}</Td>
                 <Td>{user.email}</Td>
-                <Td>{user.plan}</Td>
-                <Td>{user.isAdmin ? "Yes" : "No"}</Td>
+                <Td>{user.plan.name}</Td>
+                <Td>{user.is_admin ? "Yes" : "No"}</Td>
               </Tr>
             ))}
           </Tbody>
