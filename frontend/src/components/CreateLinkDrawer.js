@@ -18,7 +18,7 @@ import {
 import { useForm } from "react-hook-form";
 import { linkService } from "../services";
 
-const CreateLinkDrawer = ({ isOpen, onClose, btnRef }) => {
+const CreateLinkDrawer = ({ isOpen, onClose, btnRef, onCreate }) => {
   const {
     register,
     handleSubmit,
@@ -26,7 +26,8 @@ const CreateLinkDrawer = ({ isOpen, onClose, btnRef }) => {
   } = useForm();
 
   const onSubmit = (data) => {
-    linkService.newLink(data.targetUrl, data.title).then(() => {
+    linkService.newLink(data.targetUrl, data.title).then((r) => {
+      onCreate(r.getData())
       onClose();
     });
   };

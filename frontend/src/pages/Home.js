@@ -11,8 +11,9 @@ import {
 import React, { useState, useEffect } from "react";
 import LinkCard from "../components/LinkCard";
 import EditLinkDrawer from "../components/EditLinkDrawer";
+import CreateLinkDrawer from "../components/CreateLinkDrawer";
 import { handleService } from "../scripts/handleService";
-import { linkService, userService } from "../services";
+import {  userService } from "../services";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import LinkReview from "../components/LinkReview";
@@ -22,8 +23,12 @@ function Home() {
   const { user } = useAuth();
   const [links, setLinks] = useState([]);
   const [selected, setSelected] = useState(0);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const btnRef = React.useRef();
+  const { isOpen:isOpenEdit, onOpen:onOpenEdit, onClose:onCloseEdit } = useDisclosure();
+  const { isOpen:isOpenCreate, onOpen:onOpenCreate, onClose:onCloseCreate } = useDisclosure();
+
+  const btnRefEdit = React.useRef();
+  const btnRefCreate = React.useRef();
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -75,9 +80,9 @@ function Home() {
               Links
             </Heading>
             <Flex alignItems="center">
-              {/* <Button colorScheme={"telegram"} mr={8}>
+              <Button mr={8} onClick={onOpenCreate} ref={btnRefCreate} colorScheme={"telegram"}>
                 CREATE LINK
-              </Button> */}
+              </Button>
               <Text>
                 Links used: {links.length}/{user.plan.max_url_count}
               </Text>
@@ -121,8 +126,8 @@ function Home() {
               {links.length > 0 && (
                 <LinkReview
                   link={links[selected]}
-                  onOpen={onOpen}
-                  btnRef={btnRef}
+                  onOpen={onOpenEdit}
+                  btnRef={btnRefEdit}
                   onDelete={removeLinkFromList}
                 />
               )}
@@ -133,13 +138,14 @@ function Home() {
       </Flex>
       {links.length > 0 && (
         <EditLinkDrawer
-          isOpen={isOpen}
-          onClose={onClose}
-          btnRef={btnRef}
+          isOpen={isOpenEdit}
+          onClose={onCloseEdit}
+          btnRef={btnRefEdit}
           link={links[selected]}
           onEdit={editLinkFromList}
         />
       )}
+      <CreateLinkDrawer isOpen={isOpenCreate} onClose={onCloseCreate} btnRef={btnRefCreate} onCreate={addLinkFromList}/>
     </>
   );
 }

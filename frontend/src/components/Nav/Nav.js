@@ -9,7 +9,6 @@ import {
   MenuList,
   MenuItem,
   MenuDivider,
-  useDisclosure,
   useColorModeValue,
   Stack,
   useColorMode,
@@ -20,14 +19,11 @@ import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import CreateLinkDrawer from "../CreateLinkDrawer";
 export default function Nav() {
   const { colorMode, toggleColorMode } = useColorMode();
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const { user } = useAuth();
   const { signout } = useAuth();
   const navigate = useNavigate();
-  const btnRef = React.useRef();
   return (
     <>
       <Box bg={useColorModeValue("gray.300", "gray.900")} px={4}>
@@ -38,9 +34,6 @@ export default function Nav() {
           {user && (
             <Flex alignItems={"center"}>
               <Stack direction={"row"} spacing={7}>
-                <Button onClick={onOpen} ref={btnRef} colorScheme={"telegram"}>
-                  CREATE LINK
-                </Button>
                 <Button onClick={toggleColorMode}>
                   {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
                 </Button>
@@ -117,8 +110,6 @@ export default function Nav() {
         </Flex>
       </Box>
 
-      {/* LINK DRAWER */}
-      <CreateLinkDrawer isOpen={isOpen} onClose={onClose} btnRef={btnRef} />
     </>
   );
 }
