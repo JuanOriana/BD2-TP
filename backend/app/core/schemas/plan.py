@@ -8,6 +8,7 @@ class Plan(BaseModel):
     price: float
     expiration_days: int
     max_url_count: int
+    member_count: Union[int, None] = None
 
 class ExtPlan(Plan):
     id: PyObjectId = PydanticField(default_factory=PyObjectId, alias="_id")
