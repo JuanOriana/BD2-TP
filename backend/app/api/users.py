@@ -49,8 +49,8 @@ async def get_all_users(
     ):
     if not current_user["is_admin"]:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You don't have permission to access this resource",
+            status_code = status.HTTP_403_FORBIDDEN,
+            detail = "You don't have permission to access this resource",
         )
     users = list(user_collection.find())
     return users
@@ -92,7 +92,7 @@ async def get_user_links_by_username(
         current_user: User = Depends(get_current_user)
     ):
     if(current_user["username"] == username or current_user["is_admin"]):
-        links = list(link_collection.find({"author.username": username}))
+        links = list(link_collection.find({"author.username": username}).sort("creation_date", -1))
         return links
     else:
         raise HTTPException(

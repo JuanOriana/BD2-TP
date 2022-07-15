@@ -64,7 +64,6 @@ async def shorten_url(
     short_url = generate_short_url()
     while redis_db.exists(short_url):
         short_url = generate_short_url()
-    print(current_user)
     populate_redis_link(short_url, payload.target_url, current_user["plan"]["expiration_days"] * 86400)
     return populate_mongo_link(short_url, payload.target_url, payload.title, current_user)
 
@@ -82,7 +81,8 @@ async def get_all_shortened_urls(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",
         )
-    return list(link_collection.find())
+    #return list sorted by creation date
+    return list(link_collection.find({})).sort("creation_date", -1)
 
 @router.delete(
         "/{short_url}", 
