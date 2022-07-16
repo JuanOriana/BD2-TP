@@ -7,13 +7,14 @@ import {
   Text,
   Button,
   Center,
+  Select,
 } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
 import LinkCard from "../components/LinkCard";
 import EditLinkDrawer from "../components/EditLinkDrawer";
 import CreateLinkDrawer from "../components/CreateLinkDrawer";
 import { handleService } from "../scripts/handleService";
-import {  userService } from "../services";
+import { userService } from "../services";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import LinkReview from "../components/LinkReview";
@@ -23,8 +24,16 @@ function Home() {
   const { user } = useAuth();
   const [links, setLinks] = useState([]);
   const [selected, setSelected] = useState(0);
-  const { isOpen:isOpenEdit, onOpen:onOpenEdit, onClose:onCloseEdit } = useDisclosure();
-  const { isOpen:isOpenCreate, onOpen:onOpenCreate, onClose:onCloseCreate } = useDisclosure();
+  const {
+    isOpen: isOpenEdit,
+    onOpen: onOpenEdit,
+    onClose: onCloseEdit,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenCreate,
+    onOpen: onOpenCreate,
+    onClose: onCloseCreate,
+  } = useDisclosure();
 
   const btnRefEdit = React.useRef();
   const btnRefCreate = React.useRef();
@@ -64,6 +73,21 @@ function Home() {
     newLinks[insertIdx] = link;
     setLinks(newLinks);
   };
+
+  const sortLinks = (sortBy) => {
+    let newLinks = [...links];
+    if (sortBy === "clicks") {
+      setLinks(newLinks.sort((a, b) => b.clicks - a.clicks));
+    } else {
+      setLinks(
+        newLinks.sort((a, b) => {
+          const comp = new Date(b.date) - new Date(a.date);
+          if (comp == 0) comp = b.clicks - a.clicks;
+          return comp;
+        })
+      );
+    }
+  };
   return (
     <>
       <Flex height={"100vh"} flexDirection="column">
@@ -80,7 +104,12 @@ function Home() {
               Links
             </Heading>
             <Flex alignItems="center">
-              <Button mr={8} onClick={onOpenCreate} ref={btnRefCreate} colorScheme={"telegram"}>
+              <Button
+                mr={8}
+                onClick={onOpenCreate}
+                ref={btnRefCreate}
+                colorScheme={"telegram"}
+              >
                 CREATE LINK
               </Button>
               <Text>
@@ -98,18 +127,30 @@ function Home() {
               height="100%"
               bg={useColorModeValue("gray.200", "gray.700")}
             >
+              <Flex alignItems="center" p={3}>
+                <Text w={100}>Sort by: </Text>
+                <Select
+                  defaultValue="date"
+                  onChange={(e) => sortLinks(e.target.value)}
+                >
+                  <option default value="date">
+                    Date
+                  </option>
+                  <option value="clicks">Clicks</option>
+                </Select>
+              </Flex>
               {links.map((link, idx) => (
-                <>
-                  <LinkCard
-                    date={link.date}
-                    title={link.title}
-                    shortUrl={link.short_url}
-                    selected={selected === idx}
-                    onClick={() => {
-                      setSelected(idx);
-                    }}
-                  />
-                </>
+                <LinkCard
+                  key={link.short_url}
+                  date={link.date}
+                  title={link.title}
+                  shortUrl={link.short_url}
+                  clicks={link.clicks}
+                  selected={selected === idx}
+                  onClick={() => {
+                    setSelected(idx);
+                  }}
+                />
               ))}
               {links.length == 0 && (
                 <Text p={2}>You have no links created, yet</Text>
@@ -134,7 +175,6 @@ function Home() {
             </Flex>
           </Flex>
         </Flex>
-        {/* <footer>lmao</footer> */}
       </Flex>
       {links.length > 0 && (
         <EditLinkDrawer
@@ -145,7 +185,12 @@ function Home() {
           onEdit={editLinkFromList}
         />
       )}
-      <CreateLinkDrawer isOpen={isOpenCreate} onClose={onCloseCreate} btnRef={btnRefCreate} onCreate={addLinkFromList}/>
+      <CreateLinkDrawer
+        isOpen={isOpenCreate}
+        onClose={onCloseCreate}
+        btnRef={btnRefCreate}
+        onCreate={addLinkFromList}
+      />
     </>
   );
 }
