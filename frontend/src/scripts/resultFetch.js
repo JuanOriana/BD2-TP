@@ -10,7 +10,6 @@ export async function resultFetch(url, options) {
     if (token) {
       newOptions.headers["Authorization"] = `Bearer ${token}`;
     }
-    console.log("hug?")
     const response = await fetch(url, newOptions);
 
     parsedResponse = await checkError(response);
