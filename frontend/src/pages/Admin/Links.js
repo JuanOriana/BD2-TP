@@ -94,7 +94,7 @@ const Links = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {links.map((link) => (
+              {linksDisplayed.map((link) => (
                 <Tr>
                   <Td>{link.title}</Td>
                   <Td>{link.target_url}</Td>
