@@ -81,7 +81,7 @@ async def get_all_shortened_urls(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",
         )
-    return list(link_collection.find({})).sort("creation_date", -1)
+    return list(link_collection.find({}).sort("creation_date", -1))
 
 @router.delete(
         "/{short_url}", 
