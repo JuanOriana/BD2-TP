@@ -17,19 +17,31 @@ import {
   ModalHeader,
   ModalCloseButton,
   useDisclosure,
+  HStack,
+  Center,
 } from "@chakra-ui/react";
 import { ArrowBackIcon, DeleteIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
 import { linkService } from "../../services";
 import { useNavigate } from "react-router-dom";
 import { handleService } from "../../scripts/handleService";
+import { Previous, Paginator, PageGroup, Next } from "chakra-paginator";
+import { CgChevronLeft, CgChevronRight } from "react-icons/cg";
 
 const Links = () => {
   const [isLoading, setLoading] = useState(true);
   const [links, setLinks] = useState([]);
+  const [linksDisplayed, setLinksDisplayed] = useState([]);
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [linkClicked, setLinkClicked] = useState({});
+  const itemLimit = 6;
+  const [pagesQuantity, setPagesQuantity] = useState(3);
+  const [page, setPage] = useState(0);
+
+  const handlePageChange = (page) => {
+    setPage(page - 1);
+  };
 
   const deleteLink = (short_url) => {
     handleService(
@@ -49,10 +61,19 @@ const Links = () => {
     handleService(
       linkService.getLinks(),
       navigate,
-      (foundLinks) => setLinks(foundLinks),
+      (foundLinks) => {
+        setLinks(foundLinks);
+        const pagesTotal = Math.ceil(foundLinks.length / itemLimit);
+        setPagesQuantity(pagesTotal);
+        setLinksDisplayed(foundLinks.slice(0, itemLimit));
+      },
       () => setLoading(false)
     );
   }, []);
+
+  useEffect(() => {
+    setLinksDisplayed(links.slice(page * itemLimit, (page + 1) * itemLimit));
+  }, [page, links]);
   return (
     <>
       <Flex direction="column" p={10}>
@@ -93,6 +114,22 @@ const Links = () => {
             </Tbody>
           </Table>
         </TableContainer>
+        <Center>
+          <HStack>
+            <Paginator
+              onPageChange={handlePageChange}
+              pagesQuantity={pagesQuantity}
+            >
+              <Previous>
+                <CgChevronLeft />
+              </Previous>
+              <PageGroup isInline align="center" />
+              <Next>
+                <CgChevronRight />
+              </Next>
+            </Paginator>
+          </HStack>
+        </Center>
       </Flex>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
