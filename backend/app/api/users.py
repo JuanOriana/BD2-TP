@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status, Response
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from app.api.plans import get_standard_plan
-from app.core.schemas.user import User, UserInDB
+from app.api.plans import get_standard_plan, get_premium_plan
+from app.core.schemas.user import User, UserInDB, PaginatedUser
 from app.core.schemas.token_data import TokenData
 from app.core.schemas.url import URLInfo
 from app.core.models.user_register import UserRegister
@@ -38,22 +38,29 @@ async def get_current_user(
 
 # GETs
 
-#TO_DO: add pagination?
 @router.get(
         "", 
-        response_model = list[User], 
-        status_code = status.HTTP_200_OK
+        response_model = PaginatedUser, 
+        status_code = status.HTTP_200_OK,
+        response_model_exclude_none = True
     )
 async def get_all_users(
-        current_user: User = Depends(get_current_user)
+        current_user: User = Depends(get_current_user),
+        page: int = 1,
+        page_size: int = 10
     ):
     if not current_user["is_admin"]:
         raise HTTPException(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",
         )
-    users = list(user_collection.find())
-    return users
+    users = user_collection.find().sort("username", 1).skip((page - 1) * page_size).limit(page_size)
+    return PaginatedUser(
+        current_page = page,
+        total_pages = user_collection.count_documents({}) // page_size + 1,
+        page_size = page_size,
+        users = [User(**user) for user in users]
+    )
 
 @router.get(
         "/me", 
@@ -133,12 +140,13 @@ async def get_user_plan_by_username(
 async def register(
         user: UserRegister
     ):
+    current_plan = get_premium_plan() if "itba.edu.ar" in user.email else get_standard_plan()
     new_user = {
         "username": user.username,
         "email": user.email,
         "password": pwd_context.hash(user.password),
         "is_admin": False,
-        "plan": get_standard_plan(),
+        "plan": current_plan,
     }
     user = user_collection.find_one({"username": new_user["username"]})
     email = user_collection.find_one({"email": new_user["email"]})

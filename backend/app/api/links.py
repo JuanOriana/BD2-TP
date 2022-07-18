@@ -9,6 +9,7 @@ router = APIRouter()
 
 def get_short_link_owner(short_url):
     link = link_collection.find_one({"short_url": short_url})
+    print(link)
     if not link:
         raise HTTPException(
                 status_code = status.HTTP_404_NOT_FOUND, 
@@ -67,21 +68,30 @@ async def shorten_url(
     populate_redis_link(short_url, payload.target_url, current_user["plan"]["expiration_days"] * 86400)
     return populate_mongo_link(short_url, payload.target_url, payload.title, current_user)
 
-#TO_DO: add pagination
 @router.get(
         "", 
-        response_model = list[URLInfo], 
+        response_model = PaginatedURL, 
         status_code = status.HTTP_200_OK
     )
 async def get_all_shortened_urls(
-        current_user: User = Depends(get_current_user)
+        current_user: User = Depends(get_current_user),
+        page: int = 1,
+        page_size: int = 10
     ):
     if not current_user["is_admin"]:
         raise HTTPException(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",
         )
-    return list(link_collection.find({}).sort("creation_date", -1))
+    # search for all links, sort by creation date and paginate it by page and page_size and return a PaginatedURL object
+    links = link_collection.find().sort("creation_date", -1).skip((page - 1) * page_size).limit(page_size)
+    return PaginatedURL(
+        current_page = page,
+        total_pages = link_collection.count_documents({}) // page_size + 1,
+        page_size = page_size,
+        urls = [URLInfo(**link) for link in links]
+    )
+
 
 @router.delete(
         "/{short_url}", 
@@ -91,7 +101,7 @@ async def delete_link_by_short_url(
         short_url: str,
         current_user: User = Depends(get_current_user)
     ):
-    if not current_user["is_admin"] and get_short_link_owner(short_url)["username"] != current_user["username"]:
+    if get_short_link_owner(short_url)["username"] != current_user["username"] and not current_user["is_admin"]:
         raise HTTPException(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",
@@ -109,7 +119,7 @@ async def get_link_by_short_url(
         short_url: str,
         current_user: User = Depends(get_current_user)
     ):
-    if not current_user["is_admin"] and get_short_link_owner(short_url)["username"] != current_user["username"]:
+    if get_short_link_owner(short_url)["username"] != current_user["username"] and not current_user["is_admin"]:
         raise HTTPException(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",
@@ -127,7 +137,7 @@ async def get_link_metadata_by_short_url(
         short_url: str,
         current_user: User = Depends(get_current_user)
     ):
-    if not current_user["is_admin"] and get_short_link_owner(short_url)["username"] != current_user["username"]:
+    if get_short_link_owner(short_url)["username"] != current_user["username"] and not current_user["is_admin"]:
         raise HTTPException(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",
@@ -145,7 +155,7 @@ async def modify_link_by_short_url(
         update_body: UpdateURL,
         current_user: User = Depends(get_current_user),
     ):
-    if not current_user["is_admin"] and get_short_link_owner(short_url)["username"] != current_user["username"]:
+    if get_short_link_owner(short_url)["username"] != current_user["username"] and not current_user["is_admin"]:
         raise HTTPException(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",

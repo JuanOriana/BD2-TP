@@ -10,3 +10,10 @@ class User(BaseModel):
 
 class UserInDB(User):
     hashed_password: str
+
+
+class PaginatedUser(BaseModel):
+    current_page: int
+    total_pages: int
+    page_size: int
+    users: list[User]

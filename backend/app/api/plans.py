@@ -8,6 +8,9 @@ router = APIRouter()
 def get_standard_plan():
     return plan_collection.find_one({"name": "Standard"})
 
+def get_premium_plan():
+    return plan_collection.find_one({"name": "Premium"})
+
 @router.get(
         "", 
         response_model = list[ExtPlan], 

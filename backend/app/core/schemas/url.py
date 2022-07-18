@@ -19,3 +19,9 @@ class UpdateURL(BaseModel):
     short_url: str
     title: Union[str, None] = None
 
+class PaginatedURL(BaseModel):
+    current_page: int
+    total_pages: int
+    page_size: int
+    urls: list[URLInfo]
+   
