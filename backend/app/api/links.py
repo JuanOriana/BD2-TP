@@ -71,7 +71,8 @@ async def shorten_url(
 @router.get(
         "", 
         response_model = PaginatedURL, 
-        status_code = status.HTTP_200_OK
+        status_code = status.HTTP_200_OK,
+        response_model_exclude_none = True
     )
 async def get_all_shortened_urls(
         current_user: User = Depends(get_current_user),
