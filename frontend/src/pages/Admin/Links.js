@@ -37,10 +37,18 @@ const Links = () => {
   const [linkClicked, setLinkClicked] = useState({});
   const itemLimit = 6;
   const [pagesQuantity, setPagesQuantity] = useState(3);
-  const [page, setPage] = useState(0);
 
   const handlePageChange = (page) => {
-    setPage(page - 1);
+    setLoading(true);
+    handleService(
+      linkService.getLinks(page+1,itemLimit),
+      navigate,
+      (foundLinks) => {
+        setPagesQuantity(foundLinks.total_pages);
+        setLinksDisplayed(foundLinks.urls);
+      },
+      () => setLoading(false)
+    );
   };
 
   const deleteLink = (short_url) => {
@@ -48,32 +56,19 @@ const Links = () => {
       linkService.deleteLinkByKey(short_url),
       navigate,
       () => {
-        let newLinks = [...links];
+        let newLinks = [...linksDisplayed];
         newLinks = newLinks.filter((link) => link.short_url !== short_url);
-        setLinks(newLinks);
+        setLinksDisplayed(newLinks);
       },
       () => {}
     );
   };
 
   useEffect(() => {
-    setLoading(true);
-    handleService(
-      linkService.getLinks(),
-      navigate,
-      (foundLinks) => {
-        setLinks(foundLinks);
-        const pagesTotal = Math.ceil(foundLinks.length / itemLimit);
-        setPagesQuantity(pagesTotal);
-        setLinksDisplayed(foundLinks.slice(0, itemLimit));
-      },
-      () => setLoading(false)
-    );
+    handlePageChange(0);
   }, []);
 
-  useEffect(() => {
-    setLinksDisplayed(links.slice(page * itemLimit, (page + 1) * itemLimit));
-  }, [page, links]);
+
   return (
     <>
       <Flex direction="column" p={10}>

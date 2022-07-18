@@ -5,7 +5,7 @@ const basePath = paths.BASE_URL + paths.LINKS;
 
 export class LinkService {
   async getLinks(page, pageSize) {
-    return resultFetch(basePath, { method: "GET" });
+    return resultFetch(basePath + `?page=${page}&page_size=${pageSize}`, { method: "GET" });
   }
 
   async getLinkByKey(key) {

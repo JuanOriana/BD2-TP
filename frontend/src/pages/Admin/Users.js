@@ -38,10 +38,18 @@ const Users = () => {
   const [userClicked, setUserClicked] = useState({});
   const itemLimit = 6;
   const [pagesQuantity, setPagesQuantity] = useState(3);
-  const [page, setPage] = useState(0);
 
   const handlePageChange = (page) => {
-    setPage(page - 1);
+    setLoading(true);
+    handleService(
+      userService.getUsers(page+1,itemLimit),
+      navigate,
+      (foundUsers) => {
+        setPagesQuantity(foundUsers.total_pages);
+        setUsersDisplayed(foundUsers.users);
+      },
+      () => setLoading(false)
+    );
   };
 
   const deleteUser = (username) => {
@@ -49,32 +57,18 @@ const Users = () => {
       userService.deleteUserById(username),
       navigate,
       () => {
-        let newUsers = [...users];
+        let newUsers = [...usersDisplayed];
         newUsers = newUsers.filter((user) => user.username !== username);
-        setUsers(newUsers);
+        setUsersDisplayed(newUsers);
       },
       () => {}
     );
   };
 
   useEffect(() => {
-    setLoading(true);
-    handleService(
-      userService.getUsers(),
-      navigate,
-      (foundUsers) => {
-        setUsers(foundUsers);
-        const pagesTotal = Math.ceil(foundUsers.length / itemLimit);
-        setPagesQuantity(pagesTotal);
-        setUsersDisplayed(foundUsers.slice(0, itemLimit));
-      },
-      () => setLoading(false)
-    );
+    handlePageChange(0)
   }, []);
 
-  useEffect(() => {
-    setUsersDisplayed(users.slice(page * itemLimit, (page + 1) * itemLimit));
-  }, [page, users]);
 
   return (
     <>

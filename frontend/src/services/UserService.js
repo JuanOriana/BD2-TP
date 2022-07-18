@@ -5,7 +5,7 @@ const basePath = paths.BASE_URL + paths.USERS;
 
 export class UserService {
   async getUsers(page, pageSize) {
-    return resultFetch(basePath,{method:"GET"});
+    return resultFetch(basePath + `?page=${page}&page_size=${pageSize}`,{method:"GET"});
   }
 
   async getUserById(userId) {
