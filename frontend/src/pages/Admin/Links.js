@@ -41,7 +41,7 @@ const Links = () => {
   const handlePageChange = (page) => {
     setLoading(true);
     handleService(
-      linkService.getLinks(page+1,itemLimit),
+      linkService.getLinks(page-1,itemLimit),
       navigate,
       (foundLinks) => {
         setPagesQuantity(5);
@@ -65,7 +65,7 @@ const Links = () => {
   };
 
   useEffect(() => {
-    handlePageChange(-1);
+    handlePageChange(1);
   }, []);
 
 
