@@ -41,7 +41,7 @@ const Links = () => {
   const handlePageChange = (page) => {
     setLoading(true);
     handleService(
-      linkService.getLinks(page-1,itemLimit),
+      linkService.getLinks(page,itemLimit),
       navigate,
       (foundLinks) => {
         setPagesQuantity(5);
