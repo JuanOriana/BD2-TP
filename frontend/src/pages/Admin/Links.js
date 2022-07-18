@@ -44,7 +44,7 @@ const Links = () => {
       linkService.getLinks(page+1,itemLimit),
       navigate,
       (foundLinks) => {
-        setPagesQuantity(foundLinks.total_pages);
+        setPagesQuantity(5);
         setLinksDisplayed(foundLinks.urls);
       },
       () => setLoading(false)
@@ -65,7 +65,7 @@ const Links = () => {
   };
 
   useEffect(() => {
-    handlePageChange(0);
+    handlePageChange(-1);
   }, []);
 
 

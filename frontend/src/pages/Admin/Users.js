@@ -42,7 +42,7 @@ const Users = () => {
   const handlePageChange = (page) => {
     setLoading(true);
     handleService(
-      userService.getUsers(page+1,itemLimit),
+      userService.getUsers(page-1,itemLimit),
       navigate,
       (foundUsers) => {
         setPagesQuantity(foundUsers.total_pages);
@@ -66,7 +66,7 @@ const Users = () => {
   };
 
   useEffect(() => {
-    handlePageChange(0)
+    handlePageChange(1)
   }, []);
 
 
