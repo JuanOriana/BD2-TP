@@ -130,7 +130,7 @@ async def get_user_plan_by_username(
                 detail="You don't have permission to access this resource",
             )
 
-# # POSTs
+# POSTs
 
 @router.post(
         "", 

@@ -1,4 +1,4 @@
-import validators, random
+import validators, random, asyncio
 from fastapi import APIRouter, HTTPException, status, Depends
 from datetime import datetime
 from app.core.schemas.url import *
@@ -84,7 +84,6 @@ async def get_all_shortened_urls(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",
         )
-    # search for all links, sort by creation date and paginate it by page and page_size and return a PaginatedURL object
     links = link_collection.find().sort("creation_date", -1).skip((page - 1) * page_size).limit(page_size)
     return PaginatedURL(
         current_page = page,
@@ -111,6 +110,9 @@ async def delete_link_by_short_url(
     link_collection.delete_one({"short_url": short_url})
     return {}
 
+async def increase_click(short_url):
+    link_collection.update_one({"short_url": short_url}, {"$inc": {"clicks": 1}})
+
 @router.get(
         "/{short_url}", 
         response_model = URLBase, 
@@ -125,8 +127,7 @@ async def get_link_by_short_url(
             status_code = status.HTTP_403_FORBIDDEN,
             detail = "You don't have permission to access this resource",
         )
-    #increase click count
-    link_collection.update_one({"short_url": short_url}, {"$inc": {"clicks": 1}})
+    asyncio.create_task(increase_click(short_url))
     return URLBase(target_url = redis_db.get(short_url))
 
 @router.get(
@@ -145,7 +146,6 @@ async def get_link_metadata_by_short_url(
         )
     return link_collection.find_one({"short_url": short_url})
 
-#TODO
 @router.put(
         "/{short_url}", 
         response_model = URLInfo, 
