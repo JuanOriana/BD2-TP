@@ -9,7 +9,7 @@ from app.core.schemas.url import URLInfo
 from app.core.models.user_register import UserRegister
 from app.core.schemas.plan import Plan, ExtPlan
 from app.core.config import settings
-from app.database import user_collection, plan_collection, link_collection
+from app.database import user_collection, plan_collection, link_collection, redis_db
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -175,6 +175,10 @@ async def delete_user_by_username(
                 status_code=status.HTTP_403_FORBIDDEN, 
                 detail="You don't have permission to access this resource"
             )
+    links = list(link_collection.find({"author.username": username}))
+    for link in links:
+        redis_db.delete(link["short_url"])
+        link_collection.delete_one({"_id": link["_id"]})
     user_collection.delete_one({"username": username})
     return {}
 

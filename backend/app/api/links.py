@@ -9,7 +9,6 @@ router = APIRouter()
 
 def get_short_link_owner(short_url):
     link = link_collection.find_one({"short_url": short_url})
-    print(link)
     if not link:
         raise HTTPException(
                 status_code = status.HTTP_404_NOT_FOUND, 

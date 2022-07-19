@@ -30,7 +30,7 @@ async def get_all_plans():
         response_model = ExtPlan,
         status_code = status.HTTP_200_OK,
         response_model_exclude_none = True)
-async def get_all_plans(
+async def get_all_plans_by_id(
         plan_id : str
     ):
     plan = plan_collection.find_one({"_id": ObjectId(plan_id)})
