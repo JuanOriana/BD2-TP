@@ -1,6 +1,6 @@
 # BD2-TP
 
-A simple API + SPA page combo that servers as an URL shortener like bit.ly. Its includes authentication, admin panel, user-plan control, and much more.
+A simple API + SPA page combo that servers as an URL shortener. Its includes authentication, admin panel, user-plan control, and much more.
 
 ## Set Up
 To get the API running, you need MongoDB and Redis instances running. You can set them up very quickly using docker by executing the following command inside the
