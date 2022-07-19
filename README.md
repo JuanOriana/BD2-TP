@@ -16,7 +16,7 @@ by running
 ```shell
 pip install -r requirements.txt
 ```
-Some of the requirements are not available on windows, so we recommend using linux or a venv.
+**Note: Some of the requirements are not available on windows, so we recommend using linux or a venv.**
 
 Finally, once that is done, start the api using
 
@@ -31,4 +31,4 @@ Finally, you may want to get the frontend running as well. Just go to the ```fro
 npm install
 npm start
 ```
-Note: If you can not install the npm dependencies, try using --legacy-peer-deps as a flag for the npm install command
+**Note: If you can not install the npm dependencies, try using --legacy-peer-deps as a flag for the npm install command**
